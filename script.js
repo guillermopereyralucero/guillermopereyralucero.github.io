@@ -1,3 +1,3 @@
-const buttonElement = document.querySelector('.js-btn');
-buttonElement.addEventListener('click',()=>{console.log('Hola mundo');});
-buttonElement.addEventListener('mouseover',()=>{console.log('Hola mouse');});
+const btnElement = document.querySelector('.js-btn');
+btnElement.addEventListener('click',()=>{console.log('Hola mundo');});
+btnElement.addEventListener('mouseover',()=>{console.log('Hola mouse');});
