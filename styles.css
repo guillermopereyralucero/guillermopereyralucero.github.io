@@ -1,6 +1,10 @@
 body, h1 {
   font-family: system-ui;
-  background: red;
+  background: white;
   color: white;
   text-align: center;
+}
+
+h1 {
+  color: black;
 }
