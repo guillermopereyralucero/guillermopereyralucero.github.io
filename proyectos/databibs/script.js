@@ -193,7 +193,12 @@ function drawViz() {
   const width = vizEl.clientWidth || 800;
   const height = vizEl.clientHeight || 500;
 
-  // datos de ejemplo: nodos = capítulos/libros, links = referencias
+  // margen perimetral
+  const margin = {top: 40, right: 40, bottom: 40, left: 40};
+  const innerWidth = width - margin.left - margin.right;
+  const innerHeight = height - margin.top - margin.bottom;
+
+  // datos de ejemplo
   const nodes = [
     {id: "Genesis 1"},
     {id: "Genesis 2"},
@@ -212,7 +217,7 @@ function drawViz() {
 
   const color = d3.scaleOrdinal(d3.schemeCategory10);
 
-  // limpiar si ya hay un svg anterior
+  // limpiar svg previo
   d3.select("#viz").selectAll("svg").remove();
 
   const svg = d3.select("#viz")
@@ -220,32 +225,28 @@ function drawViz() {
     .attr("width", width)
     .attr("height", height);
 
-  const margin = {left: 40, right: 40, top: 40, bottom: 40};
-  const innerWidth = width - margin.left - margin.right;
-  const innerHeight = height - margin.top - margin.bottom;
-
   const g = svg.append("g")
     .attr("transform", `translate(${margin.left},${margin.top})`);
 
-  // Escala horizontal: repartir nodos en línea
+  // escala horizontal
   const x = d3.scalePoint()
     .domain(nodes.map(d => d.id))
     .range([0, innerWidth])
     .padding(0.5);
 
-  const baselineY = innerHeight - 30; // línea de base de los nodos
+  // línea base ubicada en la parte inferior del área interna
+  const baselineY = innerHeight;
 
-  // asignar coordenadas a cada nodo
+  // asignar coords
   nodes.forEach(d => {
     d.x = x(d.id);
     d.y = baselineY;
   });
 
-  // Dibujar arcos
+  // arcos
   g.selectAll("path.link")
     .data(links)
     .join("path")
-    .attr("class", "link")
     .attr("fill", "none")
     .attr("stroke", d => color(d.source))
     .attr("stroke-width", 1.5)
@@ -254,17 +255,16 @@ function drawViz() {
       const t = nodes.find(n => n.id === d.target);
       const x1 = s.x, x2 = t.x;
       const y = baselineY;
-      const r = Math.abs(x2 - x1) / 2; // radio del arco
-      const sweep = x1 < x2 ? 1 : 0;   // dirección
+      const r = Math.abs(x2 - x1) / 2; // radio
+      const sweep = x1 < x2 ? 1 : 0;
       return `M${x1},${y} A${r},${r} 0 0,${sweep} ${x2},${y}`;
     })
     .attr("opacity", 0.7);
 
-  // Dibujar nodos
+  // nodos
   g.selectAll("circle.node")
     .data(nodes)
     .join("circle")
-    .attr("class", "node")
     .attr("r", 5)
     .attr("cx", d => d.x)
     .attr("cy", d => d.y)
