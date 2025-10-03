@@ -187,7 +187,7 @@ function collapseAll(){
 populateFilterOptions();
 render();
 
-// ----- Arc Diagram / Contradiction Map -----
+// ----- Arc Diagram / Ref Map -----
 function drawViz() {
   const vizEl = document.getElementById("viz");
   const width = vizEl.clientWidth || 800;
