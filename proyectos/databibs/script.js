@@ -191,7 +191,7 @@ render();
 function drawViz() {
   const vizEl = document.getElementById("viz");
   const width = vizEl.clientWidth || 1800;
-  const height = vizEl.clientHeight || 1040;
+  const height = vizEl.clientHeight || 1240;
 
   // margen perimetral
   const margin = {top: 20, right: 20, bottom: 20, left: 20};
