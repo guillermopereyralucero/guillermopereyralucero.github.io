@@ -6772,7 +6772,7 @@ function drawViz() {
     .attr("height", height);
 
   const g = svg.append("g")
-    .attr("transform", `translate(${margin.left},${margin.top})`);
+    .attr("transform", `translate(${margin.left},${margin.top+430})`);
 
   // escala horizontal
   const x = d3.scalePoint()
