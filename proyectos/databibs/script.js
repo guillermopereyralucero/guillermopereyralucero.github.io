@@ -194,7 +194,7 @@ function drawViz() {
   const height = vizEl.clientHeight || 1040;
 
   // margen perimetral
-  const margin = {top: 550, right: 40, bottom: 40, left: 20};
+  const margin = {top: 450, right: 40, bottom: 40, left: 20};
   const innerWidth = width - margin.left - margin.right;
   const innerHeight = height - margin.top - margin.bottom;
 
