@@ -1392,10 +1392,10 @@ function drawViz() {
   ];
 
   const links = [
-    {source: "Genesis 1", target: "Genesis 2"},
-    {source: "Matthew 5", target: "Exodus 12"},
-    {source: "Matthew 27", target: "John 20"},
-    {source: "Genesis 1", target: "John 20"}
+    {source: "Génesis 1", target: "Génesis 2"},
+    {source: "Mateo 5", target: "Éxodo 12"},
+    {source: "Mateo 27", target: "Juan 20"},
+    {source: "Génesis 1", target: "Juan 20"}
   ];
 
   const color = d3.scaleOrdinal(d3.schemeCategory10);
