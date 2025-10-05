@@ -6806,8 +6806,8 @@ g.append("line")
 
 // Escala de grises
 const grayColors = {
-  ot: ["#d9d9d9", "#bfbfbf"], // tonos claros (Antiguo Testamento)
-  nt: ["#8c8c8c", "#595959"]  // tonos oscuros (Nuevo Testamento)
+  ot: ["#CCCCCC", "#999999"], // tonos claros (Antiguo Testamento)
+  nt: ["#666666", "#333333"]  // tonos oscuros (Nuevo Testamento)
 };
 
 // Listado de libros del Antiguo y Nuevo Testamento
@@ -6827,14 +6827,19 @@ const newTestamentBooks = [
 ];
 
 // Función para determinar color según libro y alternancia
-function getGrayColor(node, index) {
+function getGrayColor(node) {
   const book = node.id.split(" ")[0];
+
   if (oldTestamentBooks.includes(book)) {
-    return grayColors.ot[index % 2]; // alterna entre los dos claros
-  } else if (newTestamentBooks.includes(book)) {
-    return grayColors.nt[index % 2]; // alterna entre los dos oscuros
-  } else {
-    return "#999"; // por si no encuentra el libro
+    const index = oldTestamentBooks.indexOf(book);
+    return grayColors.ot[index % 2]; // alterna por libro
+  } 
+  else if (newTestamentBooks.includes(book)) {
+    const index = newTestamentBooks.indexOf(book);
+    return grayColors.nt[index % 2]; // alterna por libro
+  } 
+  else {
+    return "#999"; // color por defecto si no se reconoce
   }
 }
 
@@ -6849,9 +6854,10 @@ g.selectAll(".bar")
   .attr("x2", d => d.x)
   .attr("y1", baselineY)
   .attr("y2", d => baselineY + yScale(d.verses))
-  .attr("stroke", (d, i) => getGrayColor(d, i))
+  .attr("stroke", d => getGrayColor(d))
   .attr("stroke-width", 2)
   .attr("opacity", 0.9);
+
 
 
   // arcos
