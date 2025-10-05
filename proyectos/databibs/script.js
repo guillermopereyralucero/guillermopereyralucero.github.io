@@ -190,11 +190,11 @@ render();
 // ----- Arc Diagram / Ref Map -----
 function drawViz() {
   const vizEl = document.getElementById("viz");
-  const width = vizEl.clientWidth || 800;
-  const height = vizEl.clientHeight || 500;
+  const width = vizEl.clientWidth || 1800;
+  const height = vizEl.clientHeight || 1300;
 
   // margen perimetral
-  const margin = {top: 460, right: 40, bottom: 40, left: -70};
+  const margin = {top: 900, right: 40, bottom: 40, left: 20};
   const innerWidth = width - margin.left - margin.right;
   const innerHeight = height - margin.top - margin.bottom;
 
