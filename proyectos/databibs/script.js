@@ -6783,7 +6783,7 @@ function drawViz() {
   // Escala vertical para la altura de las barras (versículos)
 const yScale = d3.scaleLinear()
   .domain([0, d3.max(nodes, d => d.verses)])
-  .range([0, innerHeight / 2]); // ajustá el /2 según la altura que quieras
+  .range([0, innerHeight / 4]); // ajustá el /2 según la altura que quieras
 
   // línea base ubicada en la parte inferior del área interna
   const baselineY = innerHeight;
@@ -6827,20 +6827,49 @@ const newTestamentBooks = [
 ];
 
 // Función para determinar color según libro y alternancia
-function getGrayColor(node) {
-  const book = node.id.split(" ")[0];
+// -- crear mapas una vez (colocarlo tras las listas oldTestamentBooks / newTestamentBooks)
+const otIndexMap = new Map();
+oldTestamentBooks.forEach((b, i) => otIndexMap.set(b.toLowerCase().replace(/\s+/g, ' ').trim(), i));
 
-  if (oldTestamentBooks.includes(book)) {
-    const index = oldTestamentBooks.indexOf(book);
-    return grayColors.ot[index % 2]; // alterna por libro
-  } 
-  else if (newTestamentBooks.includes(book)) {
-    const index = newTestamentBooks.indexOf(book);
-    return grayColors.nt[index % 2]; // alterna por libro
-  } 
-  else {
-    return "#999"; // color por defecto si no se reconoce
+const ntIndexMap = new Map();
+newTestamentBooks.forEach((b, i) => ntIndexMap.set(b.toLowerCase().replace(/\s+/g, ' ').trim(), i));
+
+// -- función auxiliar para extraer y normalizar el nombre del libro
+function extractBook(id) {
+  if (!id) return '';
+  let s = String(id).trim();
+
+  // si viene con versículo "Libro X:Y", quitar ":Y"
+  s = s.replace(/:\s*\d+$/, '').trim();
+
+  // si viene "Libro Capítulo" quitar el capítulo al final -> deja "1 Corintios" o "Génesis"
+  s = s.replace(/\s+\d+$/, '').trim();
+
+  // insertar espacio si el formato fuera "1Corintios" -> "1 Corintios"
+  s = s.replace(/^(\d)([^\s])/,'$1 $2');
+
+  // normalizar espacios múltiples
+  s = s.replace(/\s+/g, ' ').trim();
+
+  return s;
+}
+
+// -- función corregida getGrayColor
+function getGrayColor(node) {
+  const book = extractBook(node.id);
+  const key = book.toLowerCase();
+
+  if (otIndexMap.has(key)) {
+    const index = otIndexMap.get(key);
+    return grayColors.ot[index % 2]; // alterna por libro en OT
   }
+
+  if (ntIndexMap.has(key)) {
+    const index = ntIndexMap.get(key);
+    return grayColors.nt[index % 2]; // alterna por libro en NT
+  }
+
+  return "#999"; // fallback si no se reconoce
 }
 
 
