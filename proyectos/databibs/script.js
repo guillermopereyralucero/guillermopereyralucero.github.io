@@ -6774,6 +6774,26 @@ function drawViz() {
   const g = svg.append("g")
     .attr("transform", `translate(${margin.left},${margin.top-300})`);
 
+// Agrupar nodos por libro -- INICIO
+
+// Asegurar que cada nodo tenga un campo 'book' 
+nodes.forEach(d => {
+  d.book = d.id.replace(/\s+\d+$/, '').trim(); // extrae "Génesis" de "Génesis 1"
+});
+
+// Agrupar los capítulos por libro
+const books = d3.group(nodes, d => d.book);
+
+// Crear un <g> por libro
+const bookGroups = g.selectAll(".book-group")
+  .data(Array.from(books), d => d[0])
+  .join("g")
+  .attr("class", "book-group")
+  .attr("id", d => `book-${d[0].replace(/\s+/g, '-')}`);
+
+// Agrupar nodos por libro -- FIN
+  
+
   // escala horizontal
   const x = d3.scalePoint()
     .domain(nodes.map(d => d.id))
@@ -6876,8 +6896,8 @@ function getGrayColor(node) {
 //Barras INICIO 
   
 // Barras hacia abajo desde la línea base
-const bars = g.selectAll(".bar")
-  .data(nodes)
+const bars = bookGroups.selectAll("rect.bar")
+  .data(d => d[1]) // d[1] son los capítulos del libro
   .join("line")
   .attr("class", "bar")
   .attr("x1", d => d.x)
