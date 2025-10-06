@@ -6962,24 +6962,32 @@ const bars = bookGroups
 
 //Barras FIN
 
+// Arcos INICIO
+// Dibuja todos los arcos en un solo path 
+const arcsPath = links.map(d => {
+  const s = nodes.find(n => n.id === d.source);
+  const t = nodes.find(n => n.id === d.target);
+  if (!s || !t) return "";
 
-  // arcos
-  g.selectAll("path.link")
-    .data(links)
-    .join("path")
-    .attr("fill", "none")
-    .attr("stroke", d => color(d.source))
-    .attr("stroke-width", 1.5)
-    .attr("d", d => {
-      const s = nodes.find(n => n.id === d.source);
-      const t = nodes.find(n => n.id === d.target);
-      const x1 = s.x, x2 = t.x;
-      const y = baselineY;
-      const r = Math.abs(x2 - x1) / 2; // radio
-      const sweep = x1 < x2 ? 1 : 0;
-      return `M${x1},${y} A${r},${r} 0 0,${sweep} ${x2},${y}`;
-    })
-    .attr("opacity", 0.7);
+  const x1 = s.x;
+  const x2 = t.x;
+  const y = baselineY;
+  const r = Math.abs(x2 - x1) / 2;
+  const sweep = x1 < x2 ? 1 : 0;
+
+  return `M${x1},${y} A${r},${r} 0 0,${sweep} ${x2},${y}`;
+}).join(" ");
+
+// Dibuja todos los arcos de una vez
+g.append("path")
+  .attr("class", "links-group")
+  .attr("fill", "none")
+  .attr("stroke", "#9ecae1") // color neutro, puedes cambiarlo por d3.interpolateCool()
+  .attr("stroke-width", 1.2)
+  .attr("opacity", 0.7)
+  .attr("d", arcsPath);
+
+// Arcos FIN
 
   // nodos
   g.selectAll("circle.node")
