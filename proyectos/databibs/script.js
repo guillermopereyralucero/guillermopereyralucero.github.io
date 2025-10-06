@@ -7049,6 +7049,7 @@ const hoverPaths = gInteractive.selectAll("path.hover")
     .attr("cy", d => d.y)
     .attr("fill", d => color(d.id));
 
+/* No mostrar etiquetas de libro
 // Etiquetas LibroCapitulo INICIO
 // Etiquetas iniciales: una por libro
 bookGroups.append("text")
@@ -7068,6 +7069,7 @@ bookGroups.append("text")
   })
   .text(d => d[0]); // nombre del libro
 // Etiquetas LibroCapitulo FIN
+*/
   
 }
 
