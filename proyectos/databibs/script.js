@@ -6873,9 +6873,10 @@ function getGrayColor(node) {
 }
 
 
-
+//Barras INICIO 
+  
 // Barras hacia abajo desde la línea base
-g.selectAll(".bar")
+const bars = g.selectAll(".bar")
   .data(nodes)
   .join("line")
   .attr("class", "bar")
@@ -6885,8 +6886,46 @@ g.selectAll(".bar")
   .attr("y2", d => baselineY + yScale(d.verses))
   .attr("stroke", d => getGrayColor(d))
   .attr("stroke-width", 2)
-  .attr("opacity", 0.9);
+  .attr("opacity", 0.9)
+  .on("mouseover", function (event, d) {
+    // índice de la barra actual
+    const index = nodes.indexOf(d);
 
+    // seleccionar la barra actual + 2 a izquierda + 2 a derecha
+    const neighbors = nodes.slice(Math.max(0, index - 2), index + 3);
+
+    // agrandar las barras cercanas
+    g.selectAll(".bar")
+      .transition()
+      .duration(200)
+      .attr("stroke-width", (n, i) => (neighbors.includes(n) ? 6 : 2))
+      .attr("opacity", (n, i) => (neighbors.includes(n) ? 1 : 0.5));
+
+    // mostrar etiqueta vertical
+    g.append("text")
+      .attr("class", "hover-label")
+      .attr("x", d.x)
+      .attr("y", baselineY - 10)
+      .attr("text-anchor", "middle")
+      .attr("font-size", 11)
+      .attr("fill", "#333")
+      .attr("transform", `rotate(-90, ${d.x}, ${baselineY - 10})`)
+      .text(d.id.replace(/(.)/g, "$1\n"));
+
+  })
+  .on("mouseout", function () {
+    // restaurar estilo original
+    g.selectAll(".bar")
+      .transition()
+      .duration(200)
+      .attr("stroke-width", 2)
+      .attr("opacity", 0.9);
+
+    // eliminar etiquetas mostradas
+    g.selectAll(".hover-label").remove();
+  });
+
+//Barras FIN
 
 
   // arcos
