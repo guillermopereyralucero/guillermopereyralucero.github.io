@@ -6917,6 +6917,10 @@ const bars = bookGroups
     });
     return path.trim();
   });
+  
+  .on("mouseover", function (event, d) {
+    // índice de la barra actual
+    const index = nodes.indexOf(d);
 
     // seleccionar la barra actual + 2 a izquierda + 2 a derecha
     const neighbors = nodes.slice(Math.max(0, index - 2), index + 3);
