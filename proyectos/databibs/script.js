@@ -6962,7 +6962,7 @@ const bars = bookGroups
 
 //Barras FIN
 
-// Arcos INICIO
+// Arcos estáticos INICIO
 // Dibuja todos los arcos en un solo path 
 const arcsPath = links.map(d => {
   const s = nodes.find(n => n.id === d.source);
@@ -6987,7 +6987,58 @@ g.append("path")
   .attr("opacity", 0.7)
   .attr("d", arcsPath);
 
-// Arcos FIN
+// Arcos estáticos FIN
+
+// Arcos dinámicos INICIO  
+// Capa interactiva para hover de arcos 
+const gInteractive = g.append("g").attr("class", "interactive-links");
+
+const hoverPaths = gInteractive.selectAll("path.hover")
+  .data(links)
+  .join("path")
+  .attr("class", "hover")
+  .attr("fill", "none")
+  .attr("stroke", "transparent")
+  .attr("stroke-width", 8) // ancho grande solo para capturar hover
+  .attr("d", d => {
+    const s = nodes.find(n => n.id === d.source);
+    const t = nodes.find(n => n.id === d.target);
+    if (!s || !t) return "";
+    const x1 = s.x, x2 = t.x, y = baselineY;
+    const r = Math.abs(x2 - x1) / 2;
+    const sweep = x1 < x2 ? 1 : 0;
+    return `M${x1},${y} A${r},${r} 0 0,${sweep} ${x2},${y}`;
+  })
+  .on("mouseover", function (event, d) {
+    // Dibujar temporalmente el arco resaltado
+    g.append("path")
+      .attr("class", "highlight-arc")
+      .attr("fill", "none")
+      .attr("stroke", "#ff6600")
+      .attr("stroke-width", 2.5)
+      .attr("opacity", 1)
+      .attr("d", d3.select(this).attr("d"));
+
+    // Mostrar etiqueta en el centro del arco
+    const s = nodes.find(n => n.id === d.source);
+    const t = nodes.find(n => n.id === d.target);
+    const midX = (s.x + t.x) / 2;
+    const midY = baselineY - Math.abs(t.x - s.x) / 3;
+    g.append("text")
+      .attr("class", "arc-label")
+      .attr("x", midX)
+      .attr("y", midY)
+      .attr("text-anchor", "middle")
+      .attr("font-size", 11)
+      .attr("fill", "#333")
+      .text(`${d.source} → ${d.target}`);
+  })
+  .on("mouseout", function () {
+    g.selectAll(".highlight-arc").remove();
+    g.selectAll(".arc-label").remove();
+  });
+
+// Arcos dinámicos FIN
 
   // nodos
   g.selectAll("circle.node")
