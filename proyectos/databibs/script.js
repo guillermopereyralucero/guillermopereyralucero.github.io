@@ -6895,64 +6895,68 @@ function getGrayColor(node) {
 
 //Barras INICIO 
   
-// Dibujar todas las barras de un libro en un solo <path>
+// Barras agrupadas por libro, dibujadas como un solo path
 const bars = bookGroups
   .append("path")
   .attr("class", "bars-group")
-  .attr("fill", d => getGrayColor(d[1][0])) // mismo color para todo el libro
-  .attr("stroke", "none")
+  .attr("fill", "none")
+  .attr("stroke", d => getGrayColor(d[1][0])) // color por libro
+  .attr("stroke-width", 2)
+  .attr("opacity", 0.9)
   .attr("d", d => {
-    // d[1] contiene todos los capítulos del libro
     const chapters = d[1];
     let path = "";
-
     chapters.forEach(ch => {
       const x = ch.x;
-      const w = 3; // ancho de barra
-      const h = ch.verses * scaleY;
-      const y = baselineY;
-
-      // dibuja un rectángulo cerrado para cada barra
-      path += `M${x},${y} v${-h} h${w} v${h} Z `;
+      const y1 = baselineY;
+      const y2 = baselineY + yScale(ch.verses);
+      path += `M${x},${y1} L${x},${y2} `;
     });
     return path.trim();
-  });
-  
-  .on("mouseover", function (event, d) {
-    // índice de la barra actual
-    const index = nodes.indexOf(d);
+  })
+  .on("mousemove", function (event) {
+    // posición X del mouse
+    const [mouseX] = d3.pointer(event);
 
-    // seleccionar la barra actual + 2 a izquierda + 2 a derecha
-    const neighbors = nodes.slice(Math.max(0, index - 2), index + 3);
+    // encontrar el capítulo más cercano a X
+    const allNodes = nodes;
+    const closest = allNodes.reduce((a, b) =>
+      Math.abs(b.x - mouseX) < Math.abs(a.x - mouseX) ? b : a
+    );
 
-    // agrandar las barras cercanas
-    g.selectAll(".bar")
-      .transition()
-      .duration(200)
-      .attr("stroke-width", (n, i) => (neighbors.includes(n) ? 6 : 2))
-      .attr("opacity", (n, i) => (neighbors.includes(n) ? 1 : 0.5));
+    // vecinos para efecto zoom
+    const index = allNodes.indexOf(closest);
+    const neighbors = allNodes.slice(Math.max(0, index - 2), index + 3);
 
-    // mostrar etiqueta vertical
+    // simular zoom cambiando opacidad y grosor solo en los cercanos
+    g.selectAll(".bars-group")
+      .attr("stroke-width", function (d) {
+        const groupNodes = d[1];
+        return groupNodes.some(n => neighbors.includes(n)) ? 6 : 2;
+      })
+      .attr("opacity", function (d) {
+        const groupNodes = d[1];
+        return groupNodes.some(n => neighbors.includes(n)) ? 1 : 0.5;
+      });
+
+    // eliminar etiquetas anteriores
+    g.selectAll(".hover-label").remove();
+
+    // mostrar etiqueta vertical del capítulo más cercano
     g.append("text")
       .attr("class", "hover-label")
-      .attr("x", d.x)
+      .attr("x", closest.x)
       .attr("y", baselineY - 10)
       .attr("text-anchor", "middle")
       .attr("font-size", 11)
       .attr("fill", "#333")
-      .attr("transform", `rotate(-90, ${d.x}, ${baselineY - 10})`)
-      .text(d.id.replace(/(.)/g, "$1\n"));
-
+      .attr("transform", `rotate(-90, ${closest.x}, ${baselineY - 10})`)
+      .text(closest.id.replace(/(.)/g, "$1\n"));
   })
-  .on("mouseout", function () {
-    // restaurar estilo original
-    g.selectAll(".bar")
-      .transition()
-      .duration(200)
+  .on("mouseleave", function () {
+    g.selectAll(".bars-group")
       .attr("stroke-width", 2)
       .attr("opacity", 0.9);
-
-    // eliminar etiquetas mostradas
     g.selectAll(".hover-label").remove();
   });
 
