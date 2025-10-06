@@ -6895,21 +6895,28 @@ function getGrayColor(node) {
 
 //Barras INICIO 
   
-// Barras hacia abajo desde la línea base
-const bars = bookGroups.selectAll("rect.bar")
-  .data(d => d[1]) // d[1] son los capítulos del libro
-  .join("line")
-  .attr("class", "bar")
-  .attr("x1", d => d.x)
-  .attr("x2", d => d.x)
-  .attr("y1", baselineY)
-  .attr("y2", d => baselineY + yScale(d.verses))
-  .attr("stroke", d => getGrayColor(d))
-  .attr("stroke-width", 2)
-  .attr("opacity", 0.9)
-  .on("mouseover", function (event, d) {
-    // índice de la barra actual
-    const index = nodes.indexOf(d);
+// Dibujar todas las barras de un libro en un solo <path>
+const bars = bookGroups
+  .append("path")
+  .attr("class", "bars-group")
+  .attr("fill", d => getGrayColor(d[1][0])) // mismo color para todo el libro
+  .attr("stroke", "none")
+  .attr("d", d => {
+    // d[1] contiene todos los capítulos del libro
+    const chapters = d[1];
+    let path = "";
+
+    chapters.forEach(ch => {
+      const x = ch.x;
+      const w = 3; // ancho de barra
+      const h = ch.verses * scaleY;
+      const y = baselineY;
+
+      // dibuja un rectángulo cerrado para cada barra
+      path += `M${x},${y} v${-h} h${w} v${h} Z `;
+    });
+    return path.trim();
+  });
 
     // seleccionar la barra actual + 2 a izquierda + 2 a derecha
     const neighbors = nodes.slice(Math.max(0, index - 2), index + 3);
