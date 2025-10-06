@@ -7049,20 +7049,25 @@ const hoverPaths = gInteractive.selectAll("path.hover")
     .attr("cy", d => d.y)
     .attr("fill", d => color(d.id));
 
-  /* Comento porque de momento no quiero que se vean los nombres, queda para la parte dinámica. 
-  // Etiquetas
-  g.selectAll("text.label")
-    .data(nodes)
-    .join("text")
-    .attr("class", "label")
-    .attr("x", d => d.x)
-    .attr("y", d => d.y + 20)   // colocar el punto base justo encima del nodo
-    .attr("text-anchor", "end") // el texto termina en el punto dado
-    .attr("font-size", 11)
-    .attr("transform", d => `rotate(-90, ${d.x}, ${d.y + 20})`)
-    .text(d => d.id);
-*/
-
+// Etiquetas LibroCapitulo INICIO
+// Etiquetas iniciales: una por libro
+bookGroups.append("text")
+  .attr("class", "book-label")
+  .attr("x", d => {
+    // promedio de x de los capítulos del libro
+    const xs = d[1].map(ch => ch.x);
+    return xs.reduce((a,b) => a+b,0) / xs.length;
+  })
+  .attr("y", baselineY + 20)
+  .attr("text-anchor", "middle")
+  .attr("font-size", 12)
+  .attr("transform", d => {
+    const xs = d[1].map(ch => ch.x);
+    const x = xs.reduce((a,b) => a+b,0) / xs.length;
+    return `rotate(-90, ${x}, ${baselineY + 20})`;
+  })
+  .text(d => d[0]); // nombre del libro
+// Etiquetas LibroCapitulo FIN
   
 }
 
