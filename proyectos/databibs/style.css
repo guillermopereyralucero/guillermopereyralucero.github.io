@@ -68,5 +68,19 @@ html,body{height:100%; margin:0; background:var(--bg); color:#111}
   border: 1px solid var(--border);
   border-radius: 12px;
   box-shadow: 0 6px 18px rgba(12,18,35,0.06);
+  position: relative;
+  display: block;
+  overflow: visible;
+  z-index: 1;
 }
 
+svg {
+  display: block;
+  position: relative;
+  z-index: 1;
+}
+
+svg, .chart-container {
+  position: relative;
+  z-index: 0; /* asegura que no tape el contenido siguiente */
+}
