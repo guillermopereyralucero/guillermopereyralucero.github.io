@@ -6783,10 +6783,12 @@ const svg = d3.select("#viz")
   .append("svg")
   .attr("width", width)
   .attr("height", height)
-  .style("position", "absolute")
+  .style("position", "relative")
   .style("top", 0)
   .style("left", 0)
-  .style("z-index", 1);
+  .style("z-index", 2)
+  .style("pointer-events", "auto")
+  .style("background", "transparent");
 
 
   const g = svg.append("g")
