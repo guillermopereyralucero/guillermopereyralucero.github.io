@@ -6763,13 +6763,31 @@ function drawViz() {
 
   const color = d3.scaleOrdinal(d3.schemeCategory10);
 
-  // limpiar svg previo
-  d3.select("#viz").selectAll("svg").remove();
+// limpiar contenido previo
+d3.select("#viz").selectAll("svg, canvas").remove();
 
-  const svg = d3.select("#viz")
-    .append("svg")
-    .attr("width", width)
-    .attr("height", height);
+// crear canvas (para los arcos)
+const canvas = d3.select("#viz")
+  .append("canvas")
+  .attr("width", width)
+  .attr("height", height)
+  .style("position", "absolute")
+  .style("top", 0)
+  .style("left", 0)
+  .style("z-index", 0);
+
+const ctx = canvas.node().getContext("2d");
+
+// crear svg (para nodos, barras, etiquetas)
+const svg = d3.select("#viz")
+  .append("svg")
+  .attr("width", width)
+  .attr("height", height)
+  .style("position", "absolute")
+  .style("top", 0)
+  .style("left", 0)
+  .style("z-index", 1);
+
 
   const g = svg.append("g")
     .attr("transform", `translate(${margin.left},${margin.top-300})`);
@@ -6928,16 +6946,21 @@ const bars = bookGroups
     const index = allNodes.indexOf(closest);
     const neighbors = allNodes.slice(Math.max(0, index - 2), index + 3);
 
-    // simular zoom cambiando opacidad y grosor solo en los cercanos
+  // Evitar recalcular todas las barras en cada pixel de movimiento
+  if (!window._lastClosest || window._lastClosest.id !== closest.id) {
+    window._lastClosest = closest;
+  
     g.selectAll(".bars-group")
-      .attr("stroke-width", function (d) {
+      .attr("stroke-width", d => {
         const groupNodes = d[1];
         return groupNodes.some(n => neighbors.includes(n)) ? 6 : 2;
       })
-      .attr("opacity", function (d) {
+      .attr("opacity", d => {
         const groupNodes = d[1];
         return groupNodes.some(n => neighbors.includes(n)) ? 1 : 0.5;
       });
+  }
+
 
     // eliminar etiquetas anteriores
     g.selectAll(".hover-label").remove();
