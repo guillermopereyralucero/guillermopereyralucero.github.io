@@ -7,6 +7,10 @@ function drawViz() {
   const vizEl = document.getElementById("viz");
   const width = vizEl.clientWidth || 1800;
   const height = vizEl.clientHeight || 1240;
+  const grafWidth = width*0.95;
+  const grafHeight = height*0.95;
+
+
 
   // margen perimetral
   const margin = {top: 20, right: 20, bottom: 20, left: 20};
@@ -6584,8 +6588,8 @@ d3.select("#viz").selectAll("svg, canvas").remove();
 // crear canvas (para los arcos)
 const canvas = d3.select("#viz")
   .append("canvas")
-  .attr("width", width)
-  .attr("height", height)
+  .attr("width", grafWidth)
+  .attr("height", grafHeight)
   .style("position", "absolute")
   .style("top", 0)
   .style("left", 0)
@@ -6596,8 +6600,8 @@ const ctx = canvas.node().getContext("2d");
 // crear svg (para nodos, barras, etiquetas)
 const svg = d3.select("#viz")
   .append("svg")
-  .attr("width", width)
-  .attr("height", height)
+  .attr("width", grafWidth)
+  .attr("height", grafHeight)
   .style("position", "relative")
   .style("top", 0)
   .style("left", 0)
