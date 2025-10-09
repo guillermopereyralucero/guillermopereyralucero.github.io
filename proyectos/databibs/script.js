@@ -1,5 +1,7 @@
 // script.js
 
+const data = [];
+
 // ----- Arc Diagram / Ref Map -----
 function drawViz() {
   const vizEl = document.getElementById("viz");
