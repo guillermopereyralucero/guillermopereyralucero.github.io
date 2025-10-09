@@ -7,8 +7,8 @@ function drawViz() {
   const vizEl = document.getElementById("viz");
   const width = vizEl.clientWidth || 1800;
   const height = vizEl.clientHeight || 1240;
-  const grafWidth = width*0.95;
-  const grafHeight = height*0.95;
+  const grafWidth = width * 0.95;
+  const grafHeight = height * 0.95;
 
 
 
@@ -6611,7 +6611,7 @@ const svg = d3.select("#viz")
 
 
   const g = svg.append("g")
-    .attr("transform", `translate(${margin.left+10},${margin.top-300})`);
+    .attr("transform", `translate(${margin.left+10},${margin.top-270})`);
 
 // Agrupar nodos por libro -- INICIO
 
@@ -6636,7 +6636,7 @@ const bookGroups = g.selectAll(".book-group")
   // escala horizontal
   const x = d3.scalePoint()
     .domain(nodes.map(d => d.id))
-    .range([0, innerWidth * 0.95])
+    .range([0, innerWidth * 0.98])
     .padding(0.5);
 
   // Escala vertical para la altura de las barras (versículos)
