@@ -106,15 +106,6 @@ svg {
   display: block;
 }
 
-/*  Posiciona el contenedor del gráfico en una capa base, permitiendo que los elementos internos (SVG, texto, etc.) se apilen correctamente.
-    Da margenes izquierdos y derechos de 0,5% */
-
-.viz-wrapper {
-  margin-right: 0.5%; 
-  margin-left: 0.5%;
-  position: relative;
-  z-index: 0;
-}
 
 /* Asegura que la sección de contenido adicional esté en la capa base también, sin cubrir ni quedar cubierta por el gráfico. */
 
