@@ -6636,7 +6636,7 @@ const bookGroups = g.selectAll(".book-group")
   // escala horizontal
   const x = d3.scalePoint()
     .domain(nodes.map(d => d.id))
-    .range([0, innerWidth * 0.98])
+    .range([0, innerWidth * 0.995])
     .padding(0.5);
 
   // Escala vertical para la altura de las barras (versículos)
@@ -6656,7 +6656,7 @@ const yScale = d3.scaleLinear()
   // Línea base (desde donde bajan las barras)
 g.append("line")
   .attr("x1", 0)
-  .attr("x2", innerWidth * 0.95)
+  .attr("x2", innerWidth * 0.995)
   .attr("y1", baselineY)
   .attr("y2", baselineY)
   .attr("stroke", "#61dafb")
