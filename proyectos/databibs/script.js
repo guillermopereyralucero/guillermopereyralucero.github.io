@@ -14,8 +14,8 @@ function drawViz() {
 
   // margen perimetral
   const margin = {top: 20, right: 20, bottom: 20, left: 20};
-  const innerWidth = width - margin.left - margin.right;
-  const innerHeight = height - margin.top - margin.bottom;
+  const innerWidth = width * 0.95;
+  const innerHeight = height * 0.95;
 
   // datos 
   const nodes = [
@@ -6636,16 +6636,16 @@ const bookGroups = g.selectAll(".book-group")
   // escala horizontal
   const x = d3.scalePoint()
     .domain(nodes.map(d => d.id))
-    .range([0, innerWidth])
+    .range([0, innerWidth * 0.95])
     .padding(0.5);
 
   // Escala vertical para la altura de las barras (versículos)
 const yScale = d3.scaleLinear()
   .domain([0, d3.max(nodes, d => d.verses)])
-  .range([0, innerHeight / 4]); // ajustá el /2 según la altura que quieras
+  .range([0, innerHeight * 0.95 / 4]); // ajustá el /2 según la altura que quieras
 
   // línea base ubicada en la parte inferior del área interna
-  const baselineY = innerHeight;
+  const baselineY = innerHeight * 0.95 ;
 
   // asignar coords
   nodes.forEach(d => {
@@ -6656,7 +6656,7 @@ const yScale = d3.scaleLinear()
   // Línea base (desde donde bajan las barras)
 g.append("line")
   .attr("x1", 0)
-  .attr("x2", innerWidth)
+  .attr("x2", innerWidth * 0.95)
   .attr("y1", baselineY)
   .attr("y2", baselineY)
   .attr("stroke", "#61dafb")
@@ -6892,28 +6892,6 @@ const hoverPaths = gInteractive.selectAll("path.hover")
     .attr("cx", d => d.x)
     .attr("cy", d => d.y)
     .attr("fill", d => color(d.id));
-
-/* No mostrar etiquetas de libro
-// Etiquetas LibroCapitulo INICIO
-// Etiquetas iniciales: una por libro
-bookGroups.append("text")
-  .attr("class", "book-label")
-  .attr("x", d => {
-    // promedio de x de los capítulos del libro
-    const xs = d[1].map(ch => ch.x);
-    return xs.reduce((a,b) => a+b,0) / xs.length;
-  })
-  .attr("y", baselineY + 20)
-  .attr("text-anchor", "middle")
-  .attr("font-size", 12)
-  .attr("transform", d => {
-    const xs = d[1].map(ch => ch.x);
-    const x = xs.reduce((a,b) => a+b,0) / xs.length;
-    return `rotate(-90, ${x}, ${baselineY + 20})`;
-  })
-  .text(d => d[0]); // nombre del libro
-// Etiquetas LibroCapitulo FIN
-*/
   
 }
 
@@ -6921,7 +6899,9 @@ bookGroups.append("text")
 // Expose data for debugging/edit desde consola
 window._BC_DATA = data;
 
-// llamar al render del gráfico
+/*  Llamar al render del gráfico
+    Espera a que todo el contenido HTML del documento esté completamente cargado antes de ejecutar el script.
+    Esto evita errores de elementos aún no disponibles en el DOM (como #viz). */
 document.addEventListener("DOMContentLoaded", () => {
   drawViz();
 });
