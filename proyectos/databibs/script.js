@@ -6607,7 +6607,7 @@ const svg = d3.select("#viz")
 
 
   const g = svg.append("g")
-    .attr("transform", `translate(${margin.left},${margin.top-300})`);
+    .attr("transform", `translate(${margin.left+10},${margin.top-300})`);
 
 // Agrupar nodos por libro -- INICIO
 
