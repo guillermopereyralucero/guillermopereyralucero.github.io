@@ -1,3 +1,13 @@
+/* Define variables CSS globales (custom properties) y una fuente base:
+--bg: color de fondo general.
+--card: color de fondo para tarjetas o secciones blancas.
+--accent: color de acento (azul principal).
+--muted: gris para texto secundario.
+--border: color de bordes suaves.
+--radius: radio de redondeo de esquinas.
+--max-width: ancho máximo del contenido central.
+font-family: tipografía general heredada por todo el documento.. */
+
 :root{
   --bg:#f6f7fb;
   --card:#ffffff;
@@ -9,49 +19,105 @@
   font-family: Inter, "Segoe UI", Roboto, Arial, sans-serif;
 }
 
+/* Aplica un margen izquierdo de 40 px a todos los encabezados <h2> dentro de <body>. Sirve para separarlos visualmente del borde izquierdo. */
+
 body h2 {margin-left: 40px;}
 
-*{box-sizing:border-box}
-html,body{height:100%; margin:0; background:var(--bg); color:#111}
-.container{max-width:var(--max-width); margin:0 auto; padding:18px}
+/* Hace que el cálculo del tamaño de todos los elementos (*) incluya padding y borde dentro del ancho y alto. Mejora la coherencia de los tamaños en todo el layout. */
 
-.site-header{background:linear-gradient(90deg,#1f2937, #253244); color:#fff; padding:26px 0}
-.site-header h1{margin:0; font-size:2rem}
-.site-header .subtitle{margin:4px 0 0; font-size:1rem; opacity:0.9}
+* {box-sizing:border-box}
 
-.content{padding:6px}
+/* Aplica a <html> y <body>:
+height:100%: ocupa todo el alto de la ventana.
+margin:0: elimina el margen por defecto del navegador.
+background: usa el color de fondo definido (--bg).
+color:#111: color base del texto (gris muy oscuro). */
 
-.site-footer{padding:14px 0; color:var(--muted); font-size:13px}
+html,body{height:100%; 
+          margin:0; 
+          background:var(--bg); 
+          color:#111;}
 
-#viz {
-  width: 100%;
-  height: 600px;
-  margin: 20px auto;
-  background: #fff;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  box-shadow: 0 6px 18px rgba(12,18,35,0.06);
-  position: relative;
-  display: block;
-  overflow: visible;
-  z-index: 1;
+/*  Centra los bloques dentro de un ancho máximo del 90% de la pantalla. 
+    Añade 18 px de padding interno.
+    Se usa en <header> y <footer> para mantener el contenido centrado. */
+
+.container{max-width:var(--max-width); 
+           margin:0 auto; 
+           padding:18px}
+
+/*  Crea el fondo oscuro degradado del encabezado.
+    El texto se muestra en blanco (color:#fff).
+    Padding vertical de 26 px arriba y abajo. */
+
+.site-header{background:linear-gradient(90deg,#1f2937, #626262); 
+             color:#fff; 
+             padding:26px 0}
+
+/* – Elimina el margen por defecto del título principal y le da un tamaño grande (2rem≈32 px). */
+
+.site-header h1{margin:0; 
+                font-size:2rem}
+
+/*  Estilo para el subtítulo bajo el título principal:
+    Pequeño margen superior (4 px).
+    Tamaño normal de texto (1rem≈16 px).
+    Ligera transparencia para suavizar el contraste. */
+
+.site-header .subtitle{margin:4px 0 0; 
+                       font-size:1rem; 
+                       opacity:0.9}
+
+/*  Define el pie de página:
+    Padding vertical de 0.8rem=13px.
+    Texto gris tenue (--muted).
+    Tamaño de fuente pequeño (0.8rem=13px). */
+
+.site-footer{padding:0.8rem 0; 
+             color:var(--muted); 
+             font-size:0.8rem}
+
+/*  Contenedor principal del gráfico D3:
+    Ocupa 99% del ancho y 98% de alto.
+    Centrado con margin:auto.
+    Fondo blanco con borde suave y esquinas redondeadas.
+    Sombra ligera para destacar el bloque.
+    position:relative permite colocar los elementos internos (canvas y svg) por capas.
+    display: block hace que el elemento ocupe todo el ancho disponible, se muestre en una nueva línea y se apile verticalmente con otros elementos de bloque.
+    overflow:auto deja que elementos sobresalgan del contenedor añadiendo scroll (visible lo hace sin scroll).
+    z-index:1 asegura que esté por encima del fondo pero debajo de elementos superiores. */
+
+#viz {width: 99%;
+      height: 98%;
+      margin: 20px auto;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      box-shadow: 0 6px 18px rgba(12,18,35,0.06);
+      position: relative;
+      display: block;
+      overflow: auto;
+      z-index: 1;
 }
+
+/* Asegura que <svg> dentro del contenedor se comporten como bloques (sin espacios extras) y se posicionen correctamente. */ 
 
 svg {
   display: block;
-  position: relative;
-  z-index: 1;
 }
 
-svg {
-  position: relative;
-  z-index: 0; /* asegura que no tape el contenido siguiente */
-}
+/*  Posiciona el contenedor del gráfico en una capa base, permitiendo que los elementos internos (SVG, texto, etc.) se apilen correctamente.
+    Da margenes izquierdos y derechos de 0,5% */
 
 .viz-wrapper {
+  margin-right: 0.5%; 
+  margin-left: 0.5%;
   position: relative;
   z-index: 0;
 }
+
+/* Asegura que la sección de contenido adicional esté en la capa base también, sin cubrir ni quedar cubierta por el gráfico. */
+
 #content {
   position: relative;
   z-index: 0;
