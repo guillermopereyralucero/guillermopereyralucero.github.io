@@ -20,6 +20,9 @@ function drawViz() {
   // datos 
   const nodes = [
 { id: "Génesis 1", verses: 31 },
+{ id: "Génesis 2", verses: 25 },
+{ id: "Génesis 3", verses: 24 },
+{ id: "Génesis 4", verses: 26 },
 { id: "Apocalipsis 22", verses: 21 }
   ];
 
