@@ -1,0 +1,138 @@
+/* Define variables CSS globales (custom properties) y una fuente base:
+--bg: color de fondo general.
+--card: color de fondo para tarjetas o secciones blancas.
+--accent: color de acento (azul principal).
+--muted: gris para texto secundario.
+--border: color de bordes suaves.
+--radius: radio de redondeo de esquinas.
+--max-width: ancho máximo del contenido central.
+font-family: tipografía general heredada por todo el documento.. */
+
+:root{
+  --bg:#f6f7fb;
+  --card:#ffffff;
+  --accent:#2b6cb0;
+  --muted:#666;
+  --border: #e6e9ef;
+  --radius:10px;
+  --max-width:90%;
+  font-family: Inter, "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+/* Aplica a <html> y <body>:
+height:100%: ocupa todo el alto de la ventana.
+margin:0: elimina el margen por defecto del navegador.
+background: usa el color de fondo definido (--bg).
+color:#111: color base del texto (gris muy oscuro). */
+
+html,body{
+    text-align: center;
+    height:100%; 
+    margin:0; 
+    background:var(--bg); 
+    color:#111;
+}
+
+
+/* Hace que el cálculo del tamaño de todos los elementos (*) incluya padding y borde dentro del ancho y alto. Mejora la coherencia de los tamaños en todo el layout. */
+
+* {box-sizing:border-box;}
+
+/*  Crea el fondo oscuro degradado del encabezado.
+    El texto se muestra en blanco (color:#fff).
+    Padding vertical de 26 px arriba y abajo. */
+
+.header{background:linear-gradient(90deg,#1f2937, #626262); 
+             color:#fff; 
+             padding:26px 0;}
+
+/* – Elimina el margen por defecto del título principal y le da un tamaño grande (2rem≈32 px). */
+
+.title-ppal {margin:0; 
+                font-size:2rem}
+
+
+
+/*  Estilo para el subtítulo bajo el título principal:
+    Pequeño margen superior (4 px).
+    Tamaño normal de texto (1rem≈16 px).
+    Ligera transparencia para suavizar el contraste. */
+
+.subtitle-ppal{
+    margin:4px 0 0; 
+    font-size:1rem; 
+    }
+
+
+
+
+/*  Centra los bloques dentro de un ancho máximo del 90% de la pantalla. 
+    Añade 18 px de padding interno.
+    Se usa en <header> y <footer> para mantener el contenido centrado. */
+
+
+.header-div, .footer-div {
+    max-width:var(--max-width); 
+    margin:0 auto; 
+    padding:18px;}
+
+
+/* Aplica un margen izquierdo de 40 px a todos los encabezados <h2> dentro de <body>. Sirve para separarlos visualmente del borde izquierdo. */
+
+body h2 {margin-left: 0px;}
+
+/* Boton de selección de orden del gráfico "chart" */
+
+#linkColor {
+    margin: 20px;
+    padding: 3px;
+}
+
+
+
+/*  Contenedor principal del gráfico D3:
+    Ocupa 99% del ancho y 98% de alto.
+    Centrado con margin:auto.
+    Fondo blanco con borde suave y esquinas redondeadas.
+    Sombra ligera para destacar el bloque.
+    position:relative permite colocar los elementos internos (canvas y svg) por capas.
+    display: block hace que el elemento ocupe todo el ancho disponible, se muestre en una nueva línea y se apile verticalmente con otros elementos de bloque.
+    overflow:auto deja que elementos sobresalgan del contenedor añadiendo scroll (visible lo hace sin scroll).
+    z-index:1 asegura que esté por encima del fondo pero debajo de elementos superiores. */
+
+#chart {width: 98%;
+      height: 98%;
+      margin: auto;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      box-shadow: 0 6px 18px rgba(12,18,35,0.06);
+      position: relative;
+      display: block;
+      z-index: 1;
+}
+
+
+
+/*  Define el pie de página:
+    Padding vertical de 0.8rem=13px.
+    Texto gris tenue (--muted).
+    Tamaño de fuente pequeño (0.8rem=13px). */
+
+.footer{
+    margin-top: 0.9rem;
+    padding:0.8rem 0; 
+    color:var(--muted); 
+    font-size:0.8rem}
+
+
+svg {
+  max-width: 100%;
+  height: auto;
+}
+
+.hover text { fill: #aaa; }
+.hover g.primary text { font-weight: bold; fill: #333; }
+.hover g.secondary text { fill: #333; }
+.hover path { stroke: #ccc; }
+.hover path.primary { stroke: #333; }

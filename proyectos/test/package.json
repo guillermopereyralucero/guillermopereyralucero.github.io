@@ -1,0 +1,14 @@
+{
+  "name": "d3-sankey-2",
+  "main": "3ecaa4aaa61dc833@339.js",
+  "version": "339.0.0",
+  "homepage": "https://observablehq.com/@d3/sankey/2",
+  "author": {
+    "name": "D3",
+    "url": "https://observablehq.com/@d3"
+  },
+  "type": "module",
+  "peerDependencies": {
+    "@observablehq/runtime": "4 - 5"
+  }
+}

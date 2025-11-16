@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8">
+    <title>Sankey diagram</title>
+    <link rel="stylesheet" type="text/css" href="./style.css">
+</head>
+
+<body>
+    <script type="module">
+    import define from "./script.js";
+    import {Runtime, Library, Inspector} from "./runtime.js";
+    const runtime = new Runtime();
+    const main = runtime.module(define, Inspector.into(document.body));
+    </script>
+</body>

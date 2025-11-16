@@ -1,366 +1,889 @@
-// script.js
+// BLOQUE Funciones
 
-const data = [];
+// Función - Carga de nodos y de links
+async function loadResource(name) {
+  try {
+    const res = await fetch(`./data/${name}.json`);
+    if (!res.ok) throw new Error(`No se pudo cargar ${name}.json`);
+    return await res.json();
+  } catch (err) {
+    console.error(`Error cargando ${name}:`, err);
+    return [];
+  }
+}
 
-// ----- Arc Diagram / Ref Map -----
-function drawViz() {
+const loadNodes = () => loadResource("nodes");
+const loadLinks = () => loadResource("links");
+
+
+// Función - Inicializa canvas, SVG y cajas de texto
+function initCanvas() {
   const vizEl = document.getElementById("viz");
   const width = vizEl.clientWidth || 1800;
-  const height = vizEl.clientHeight || 1240;
-  const grafWidth = width * 0.95;
+  const height = vizEl.clientHeight || 8000;
+  const grafWidth = width * 0.99;
   const grafHeight = height * 0.95;
-
-
-
-  // margen perimetral
+  // Márgenes y área interna
   const margin = {top: 20, right: 20, bottom: 20, left: 20};
   const innerWidth = width * 0.95;
-  const innerHeight = height * 0.95;
-
-  // datos 
-  const nodes = [
-{ id: "Génesis 1", verses: 31 },
-{ id: "Génesis 2", verses: 25 },
-{ id: "Génesis 3", verses: 24 },
-{ id: "Génesis 4", verses: 26 },
-{ id: "Apocalipsis 22", verses: 21 }
-  ];
-
-  const links = [
-{source: "Génesis 1", target: "2 Corintios 4"},
-{source: "Génesis 2", target: "Apocalipsis 22"},
-{source: "Génesis 3", target: "Apocalipsis 20"},
-{source: "Génesis 3", target: "Apocalipsis 22"},
-{source: "Apocalipsis 22", target: "Génesis 2"},
-{source: "Apocalipsis 22", target: "Génesis 2"},
-{source: "Apocalipsis 22", target: "Génesis 3"},
-{source: "Apocalipsis 22", target: "Isaías 11"},
-{source: "Apocalipsis 22", target: "Deuteronomio 12"}
-  ];
-
-  const color = d3.scaleOrdinal(d3.schemeCategory10);
-
-// limpiar contenido previo
-d3.select("#viz").selectAll("svg, canvas").remove();
-
-// crear canvas (para los arcos)
-const canvas = d3.select("#viz")
-  .append("canvas")
-  .attr("width", grafWidth)
-  .attr("height", grafHeight)
-  .style("position", "absolute")
-  .style("top", 0)
-  .style("left", 0)
-  .style("z-index", 0);
-
-const ctx = canvas.node().getContext("2d");
-
-// crear svg (para nodos, barras, etiquetas)
-const svg = d3.select("#viz")
-  .append("svg")
-  .attr("width", grafWidth)
-  .attr("height", grafHeight)
-  .style("position", "relative")
-  .style("top", 0)
-  .style("left", 0)
-  .style("z-index", 2)
-  .style("pointer-events", "auto")
-  .style("background", "transparent");
-
-
-  const g = svg.append("g")
-    .attr("transform", `translate(${margin.left+10},${margin.top-270})`);
-
-// Agrupar nodos por libro -- INICIO
-
-// Asegurar que cada nodo tenga un campo 'book' 
-nodes.forEach(d => {
-  d.book = d.id.replace(/\s+\d+$/, '').trim(); // extrae "Génesis" de "Génesis 1"
-});
-
-// Agrupar los capítulos por libro
-const books = d3.group(nodes, d => d.book);
-
-// Crear un <g> por libro
-const bookGroups = g.selectAll(".book-group")
-  .data(Array.from(books), d => d[0])
-  .join("g")
-  .attr("class", "book-group")
-  .attr("id", d => `book-${d[0].replace(/\s+/g, '-')}`);
-
-// Agrupar nodos por libro -- FIN
-  
-
-  // escala horizontal
-  const x = d3.scalePoint()
-    .domain(nodes.map(d => d.id))
-    .range([0, innerWidth * 0.995])
-    .padding(0.5);
-
-  // Escala vertical para la altura de las barras (versículos)
-const yScale = d3.scaleLinear()
-  .domain([0, d3.max(nodes, d => d.verses)])
-  .range([0, innerHeight * 0.95 / 4]); // ajustá el /2 según la altura que quieras
-
-  // línea base ubicada en la parte inferior del área interna
-  const baselineY = innerHeight * 0.95 ;
-
-  // asignar coords
-  nodes.forEach(d => {
-    d.x = x(d.id);
-    d.y = baselineY;
-  });
-
-  // Línea base (desde donde bajan las barras)
-g.append("line")
-  .attr("x1", 0)
-  .attr("x2", innerWidth * 0.995)
-  .attr("y1", baselineY)
-  .attr("y2", baselineY)
-  .attr("stroke", "#61dafb")
-  .attr("stroke-width", 1)
-  .attr("opacity", 0.4);
-
-// Escala de grises
-const grayColors = {
-  ot: ["#CCCCCC", "#999999"], // tonos claros (Antiguo Testamento)
-  nt: ["#666666", "#333333"]  // tonos oscuros (Nuevo Testamento)
-};
-
-// Listado de libros del Antiguo y Nuevo Testamento
-const oldTestamentBooks = [
-  "Génesis","Éxodo","Levítico","Números","Deuteronomio","Josué","Jueces","Rut",
-  "1 Samuel","2 Samuel","1 Reyes","2 Reyes","1 Crónicas","2 Crónicas","Esdras",
-  "Nehemías","Ester","Job","Salmos","Proverbios","Eclesiastés","Cantares",
-  "Isaías","Jeremías","Lamentaciones","Ezequiel","Daniel","Oseas","Joel","Amós",
-  "Abdías","Jonás","Miqueas","Nahúm","Habacuc","Sofonías","Hageo","Zacarías","Malaquías"
-];
-
-const newTestamentBooks = [
-  "Mateo","Marcos","Lucas","Juan","Hechos","Romanos","1 Corintios","2 Corintios",
-  "Gálatas","Efesios","Filipenses","Colosenses","1 Tesalonicenses","2 Tesalonicenses",
-  "1 Timoteo","2 Timoteo","Tito","Filemón","Hebreos","Santiago","1 Pedro","2 Pedro",
-  "1 Juan","2 Juan","3 Juan","Judas","Apocalipsis"
-];
-
-// Función para determinar color según libro y alternancia
-// -- crear mapas una vez (colocarlo tras las listas oldTestamentBooks / newTestamentBooks)
-const otIndexMap = new Map();
-oldTestamentBooks.forEach((b, i) => otIndexMap.set(b.toLowerCase().replace(/\s+/g, ' ').trim(), i));
-
-const ntIndexMap = new Map();
-newTestamentBooks.forEach((b, i) => ntIndexMap.set(b.toLowerCase().replace(/\s+/g, ' ').trim(), i));
-
-// -- función auxiliar para extraer y normalizar el nombre del libro
-function extractBook(id) {
-  if (!id) return '';
-  let s = String(id).trim();
-
-  // si viene con versículo "Libro X:Y", quitar ":Y"
-  s = s.replace(/:\s*\d+$/, '').trim();
-
-  // si viene "Libro Capítulo" quitar el capítulo al final -> deja "1 Corintios" o "Génesis"
-  s = s.replace(/\s+\d+$/, '').trim();
-
-  // insertar espacio si el formato fuera "1Corintios" -> "1 Corintios"
-  s = s.replace(/^(\d)([^\s])/,'$1 $2');
-
-  // normalizar espacios múltiples
-  s = s.replace(/\s+/g, ' ').trim();
-
-  return s;
+  const innerHeight = height * 0.80;
+  // Escala de colores D3
+  const color = d3.scaleOrdinal(d3.schemeTableau10);
+  // Limpiar contenido anterior
+  d3.select("#viz").selectAll("svg, canvas").remove();
+  // Canvas (para arcos estáticos)
+  const canvas = d3.select("#viz")
+    .append("canvas")
+    .attr("width", grafWidth)
+    .attr("height", grafHeight)
+    .style("position", "absolute")
+    .style("z-index", 2);
+  const ctx = canvas.node().getContext("2d");
+  // SVG (para nodos, barras, textos)
+  const svg = d3.select("#viz")
+    .append("svg")
+    .attr("width", grafWidth)
+    .attr("height", grafHeight)
+    .style("position", "relative")
+    .style("z-index", 2)
+    .style("pointer-events", "auto")
+    .style("background", "transparent");
+  // Contenedores de texto (sourceBox y targetBox)
+  const createBox = (id, leftOrRight) => {
+    const box = document.createElement("div");
+    box.id = id;
+    box.style.position = "absolute";
+    box.style.top = "10px";
+    box.style[leftOrRight] = "10px";
+    box.style.width = "45%";
+    box.style.minHeight = "120px";
+    box.style.padding = "10px";
+    box.style.fontSize = "13px";
+    box.style.lineHeight = "1.4";
+    box.style.color = "#111";
+    box.style.background = "rgba(189, 189, 189, 0.85)";
+    box.style.borderRadius = "8px";
+    box.style.overflow = "auto";
+    box.style.boxShadow = "0 2px 6px rgba(0,0,0,0.1)";
+    box.style.zIndex = "10";
+    vizEl.appendChild(box);
+  };
+  createBox("sourceBox", "left");
+  createBox("targetBox", "right");
+  // Grupo principal para elementos SVG
+  const g = svg.append("g");
+  return { svg, ctx, g, innerWidth, innerHeight, grafWidth, grafHeight, margin, color };
 }
 
-// -- función corregida getGrayColor
-function getGrayColor(node) {
-  const book = extractBook(node.id);
-  const key = book.toLowerCase();
-
-  if (otIndexMap.has(key)) {
-    const index = otIndexMap.get(key);
-    return grayColors.ot[index % 2]; // alterna por libro en OT
-  }
-
-  if (ntIndexMap.has(key)) {
-    const index = ntIndexMap.get(key);
-    return grayColors.nt[index % 2]; // alterna por libro en NT
-  }
-
-  return "#999"; // fallback si no se reconoce
+// Función - Crear escalas --> Calcula el scaleBand de los bloques verticales (Libro+Cap) --> Calcula el baselineY --> Calcula el scale para colocar los nodos --> Devuelve todas las escalas juntas de forma limpia
+function createScales(nodes, innerWidth, innerHeight) {
+    // baseline para las barras
+    const baselineY = innerHeight * 0.95;
+    // scaleBand para las barras Libro+Cap
+    const xBand = d3.scaleBand()
+        .domain(d3.range(nodes.length))
+        .range([0, innerWidth * 0.995])
+        .align(0.5)
+        .paddingInner(0.1)
+        .paddingOuter(0.5);
+    // escala angular (para arcos, opcional si ya la usás)
+    const angleScale = d3.scaleLinear()
+        .domain([0, nodes.length - 1])
+        .range([-Math.PI / 2.2, Math.PI / 2.2]);
+    // devuelve TODO lo necesario
+    return {
+        baselineY,
+        xBand,
+        angleScale
+    };
 }
 
+// Función - layoutNodes() - Asigna coordenadas a cada nodo --> Usa la escala angleScale --> Usa innerWidth para distribuir horizontalmente --> Usa baselineY como altura base del “semicírculo” --> Calcula posiciones sin dibujar nada --> Solo actualiza objetos nodes.
 
-//Barras INICIO 
-  
-// Barras agrupadas por libro, dibujadas como un solo path
-const bars = bookGroups
-  .append("path")
-  .attr("class", "bars-group")
-  .attr("fill", "none")
-  .attr("stroke", d => getGrayColor(d[1][0])) // color por libro
-  .attr("stroke-width", 2)
-  .attr("opacity", 0.9)
-  .attr("d", d => {
-    const chapters = d[1];
-    let path = "";
-    chapters.forEach(ch => {
-      const x = ch.x;
-      const y1 = baselineY;
-      const y2 = baselineY + yScale(ch.verses);
-      path += `M${x},${y1} L${x},${y2} `;
+function layoutNodes(nodes, innerWidth, baselineY) {
+    const total = nodes.length;
+    nodes.forEach((n, i) => {
+        // Distribución horizontal uniforme
+        n.x = (innerWidth / (total + 1)) * (i + 1);;
+				// Distribución vertical constante
+        n.y = baselineY;
     });
-    return path.trim();
-  })
-  .on("mousemove", function (event) {
-    // posición X del mouse
-    const [mouseX] = d3.pointer(event);
-
-    // encontrar el capítulo más cercano a X
-    const allNodes = nodes;
-    const closest = allNodes.reduce((a, b) =>
-      Math.abs(b.x - mouseX) < Math.abs(a.x - mouseX) ? b : a
-    );
-
-    // vecinos para efecto zoom
-    const index = allNodes.indexOf(closest);
-    const neighbors = allNodes.slice(Math.max(0, index - 2), index + 3);
-
-  // Evitar recalcular todas las barras en cada pixel de movimiento
-  if (!window._lastClosest || window._lastClosest.id !== closest.id) {
-    window._lastClosest = closest;
-  
-    g.selectAll(".bars-group")
-      .attr("stroke-width", d => {
-        const groupNodes = d[1];
-        return groupNodes.some(n => neighbors.includes(n)) ? 6 : 2;
-      })
-      .attr("opacity", d => {
-        const groupNodes = d[1];
-        return groupNodes.some(n => neighbors.includes(n)) ? 1 : 0.5;
-      });
-  }
-
-
-    // eliminar etiquetas anteriores
-    g.selectAll(".hover-label").remove();
-
-    // mostrar etiqueta vertical del capítulo más cercano
-    g.append("text")
-      .attr("class", "hover-label")
-      .attr("x", closest.x)
-      .attr("y", baselineY - 10)
-      .attr("text-anchor", "middle")
-      .attr("font-size", 11)
-      .attr("fill", "#333")
-      .attr("transform", `rotate(-90, ${closest.x}, ${baselineY - 10})`)
-      .text(closest.id.replace(/(.)/g, "$1\n"));
-  })
-  .on("mouseleave", function () {
-    g.selectAll(".bars-group")
-      .attr("stroke-width", 2)
-      .attr("opacity", 0.9);
-    g.selectAll(".hover-label").remove();
-  });
-
-//Barras FIN
-
-// Arcos estáticos INICIO
-// Dibuja todos los arcos en un solo path 
-const arcsPath = links.map(d => {
-  const s = nodes.find(n => n.id === d.source);
-  const t = nodes.find(n => n.id === d.target);
-  if (!s || !t) return "";
-
-  const x1 = s.x;
-  const x2 = t.x;
-  const y = baselineY;
-  const r = Math.abs(x2 - x1) / 2;
-  const sweep = x1 < x2 ? 1 : 0;
-
-  return `M${x1},${y} A${r},${r} 0 0,${sweep} ${x2},${y}`;
-}).join(" ");
-
-// Dibuja todos los arcos de una vez
-g.append("path")
-  .attr("class", "links-group")
-  .attr("fill", "none")
-  .attr("stroke", "#9ecae1") // color neutro, puedes cambiarlo por d3.interpolateCool()
-  .attr("stroke-width", 1.2)
-  .attr("opacity", 0.7)
-  .attr("d", arcsPath);
-
-// Arcos estáticos FIN
-
-// Arcos dinámicos INICIO  
-// Capa interactiva para hover de arcos 
-const gInteractive = g.append("g").attr("class", "interactive-links");
-
-const hoverPaths = gInteractive.selectAll("path.hover")
-  .data(links)
-  .join("path")
-  .attr("class", "hover")
-  .attr("fill", "none")
-  .attr("stroke", "transparent")
-  .attr("stroke-width", 8) // ancho grande solo para capturar hover
-  .attr("d", d => {
-    const s = nodes.find(n => n.id === d.source);
-    const t = nodes.find(n => n.id === d.target);
-    if (!s || !t) return "";
-    const x1 = s.x, x2 = t.x, y = baselineY;
-    const r = Math.abs(x2 - x1) / 2;
-    const sweep = x1 < x2 ? 1 : 0;
-    return `M${x1},${y} A${r},${r} 0 0,${sweep} ${x2},${y}`;
-  })
-  .on("mouseover", function (event, d) {
-    // Dibujar temporalmente el arco resaltado
-    g.append("path")
-      .attr("class", "highlight-arc")
-      .attr("fill", "none")
-      .attr("stroke", "#ff6600")
-      .attr("stroke-width", 2.5)
-      .attr("opacity", 1)
-      .attr("d", d3.select(this).attr("d"));
-
-    // Mostrar etiqueta en el centro del arco
-    const s = nodes.find(n => n.id === d.source);
-    const t = nodes.find(n => n.id === d.target);
-    const midX = (s.x + t.x) / 2;
-    const midY = baselineY - Math.abs(t.x - s.x) / 3;
-    g.append("text")
-      .attr("class", "arc-label")
-      .attr("x", midX)
-      .attr("y", midY)
-      .attr("text-anchor", "middle")
-      .attr("font-size", 11)
-      .attr("fill", "#333")
-      .text(`${d.source} → ${d.target}`);
-  })
-  .on("mouseout", function () {
-    g.selectAll(".highlight-arc").remove();
-    g.selectAll(".arc-label").remove();
-  });
-
-// Arcos dinámicos FIN
-
-  // nodos
-  g.selectAll("circle.node")
-    .data(nodes)
-    .join("circle")
-    .attr("r", 5)
-    .attr("cx", d => d.x)
-    .attr("cy", d => d.y)
-    .attr("fill", d => color(d.id));
-  
+    return nodes;
 }
 
 
-// Expose data for debugging/edit desde consola
-window._BC_DATA = data;
+// Función - Dibujar enlaces --> Dibujar los arcos / curvas entre nodos (links) --> Usar ctx canvas) para dibujar --> Usar las escalas dentro del parámetro scales --> NO debe calcular posiciones de nodos --> NO debe manipular SVG --> NO debe agregar eventos
 
-/*  Llamar al render del gráfico
-    Espera a que todo el contenido HTML del documento esté completamente cargado antes de ejecutar el script.
-    Esto evita errores de elementos aún no disponibles en el DOM (como #viz). */
-document.addEventListener("DOMContentLoaded", () => {
-  drawViz();
-});
+function drawLinks(ctx, links, nodesMap, baselineY) {
+	ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+	ctx.lineWidth = 1.2;
+	ctx.strokeStyle = "rgba(80, 80, 80, 0.35)";
+	links.forEach(link => {
+		const source = nodesMap.get(link.source);
+		const target = nodesMap.get(link.target_ini); // usamos target_ini o target_fin según corresponda
+		if (!source || !target) return;
+		const x1 = source.x;
+		const y1 = source.y;
+		const x2 = target.x;
+		const y2 = target.y;
+		// Para línea horizontal, curva mínima (opcional)
+		const cx = (x1 + x2) / 2;
+		const cy = baselineY - Math.abs(x2 - x1) * 0.15; // altura del arco
+		ctx.beginPath();
+		ctx.moveTo(x1, y1);
+		ctx.quadraticCurveTo(cx, cy, x2, y2);
+		ctx.stroke();
+	});
+}
+
+// Función - Dibuja nodos
+function drawNodes(svgGroup, nodes, color) {
+	svgGroup.selectAll("circle.node")
+		.data(nodes)
+		.join("circle")
+		.attr("class", "node")
+		.attr("r", 1)  // radio del nodo
+		.attr("cx", d => d.x)
+		.attr("cy", d => d.y)
+		.attr("fill", d => color(d.id))
+		.attr("stroke", "#000000ff")
+		.attr("stroke-width", 0.25)
+		.attr("opacity", 0.9)
+		.raise();
+}
+
+
+// Función - Interacción con Nodos 
+function nodeInteractions(svgGroup, nodes, links, nodesMap, baselineY, xBand, yScale) {
+    const nodeHoverRadius = 10;
+    const arcHighlightColor = "rgba(255,165,0,0.5)"; // naranja más claro
+
+    // Mapa rápido de arcos relacionados por nodo
+    const nodeArcsMap = new Map();
+    nodes.forEach(n => nodeArcsMap.set(n.id, []));
+    links.forEach(l => {
+        if (nodeArcsMap.has(l.source)) nodeArcsMap.get(l.source).push(l);
+        if (nodeArcsMap.has(l.target_ini)) nodeArcsMap.get(l.target_ini).push(l);
+    });
+
+    // Capa única para bloques y textos de versículos
+    const dynLayerNode = svgGroup.append("g").attr("class", "dyn-layer-node");
+
+    // Capa para arcos resaltados por hover de nodo
+    const highlightLayer = svgGroup.append("g").attr("class", "node-highlight-arcs").raise();
+
+    // Función para limpiar los bloques de versículos
+    function clearVerses() {
+        dynLayerNode.selectAll("*").remove();
+    }
+
+    // Captura click en SVG fuera de nodos
+    svgGroup.on("click", function(event) {
+        if (event.target.tagName !== "circle") clearVerses();
+        highlightLayer.selectAll("path").remove();
+    });
+
+    // Interacción sobre los nodos
+    svgGroup.selectAll("circle.node")
+        .on("mouseover", function(event, d) {
+            d3.select(this).transition().duration(150).attr("r", nodeHoverRadius);
+
+            // Limpiar arcos previos
+            highlightLayer.selectAll("path").remove();
+
+            // Dibujar todos los arcos relacionados al nodo
+            const relatedLinks = nodeArcsMap.get(d.id) || [];
+            relatedLinks.forEach(link => {
+                const s = nodesMap.get(link.source);
+                const t_i = nodesMap.get(link.target_ini);
+                if (!s || !t_i) return;
+
+                const x1 = s.x;
+                const x2 = t_i.x;
+                const y = baselineY;
+                const r = Math.abs(x2 - x1) / 2;
+                const sweep = x1 < x2 ? 1 : 0;
+
+                highlightLayer.append("path")
+                    .attr("class", "highlight-arc")
+                    .attr("fill", "none")
+                    .attr("stroke", arcHighlightColor)
+                    .attr("stroke-width", 2)
+                    .attr("d", `M${x1},${y} A${r},${r} 0 0,${sweep} ${x2},${y}`)
+                    .raise();
+            });
+        })
+        .on("mouseout", function(event, d) {
+            d3.select(this).transition().duration(150).attr("r", 1);
+            highlightLayer.selectAll("path").remove();
+        })
+        .on("click", function(event, d) {
+            event.stopPropagation();
+            clearVerses();
+
+            const chapter = d;
+            const numVerses = chapter.verses;
+            const nodeX = chapter.x;
+            const nodeY = baselineY;
+            const blockHeight = 15;
+            const blocks = d3.range(numVerses);
+
+            // Bloques rojos
+            dynLayerNode.selectAll(".dyn-block-node")
+                .data(blocks)
+                .join("rect")
+                .attr("class", "dyn-block-node")
+                .attr("x", nodeX - xBand.bandwidth()/2)
+                .attr("y", nodeY)
+                .attr("width", xBand.bandwidth())
+                .attr("height", blockHeight)
+                .attr("fill", "#e71414ff")
+                .attr("stroke", "#01939dff")
+                .attr("opacity", 0.9)
+                .transition()
+                .delay(i => i * 10)
+                .duration(10)
+                .attr("y", i => nodeY + (i + 1) * blockHeight)
+                .attr("opacity", 1);
+
+            // Textos de versículos
+            dynLayerNode.selectAll(".dyn-text-node")
+                .data(blocks)
+                .join("text")
+                .attr("class", "dyn-text-node")
+                .attr("y", i => nodeY + (i + 1) * blockHeight + blockHeight/2)
+                .attr("x", nodeX)
+                .attr("text-anchor", "middle")
+                .attr("font-size", 14)
+                .text(i => i + 1)
+                .attr("opacity", 0)
+                .transition()
+                .delay(i => i * 30)
+                .duration(300)
+                .attr("opacity", 1);
+        });
+}
+
+// Función avanzada para convertir RTF simple a HTML
+function parseRTFtoHTMLAdvanced(rtf) {
+  if (!rtf) return "";
+
+  // Reemplaza saltos de línea RTF por <br>
+  rtf = rtf.replace(/\\par\s*/g, "<br>");
+
+  // Stack para estilos activos
+  let styleStack = [];
+  let html = "";
+  let buffer = "";
+
+  // Regex para encontrar comandos RTF básicos: {, }, \b, \i, \cf6, \cf10
+  const tokenRegex = /(\{|\}|\\[a-z]+\d*|\s+|[^\\\{\}]+)/gi;
+  const tokens = rtf.match(tokenRegex);
+
+  if (!tokens) return rtf;
+
+  tokens.forEach(token => {
+    token = token.trim();
+    if (!token) return;
+
+    switch (token) {
+      case "{":
+        // Abrir un nuevo bloque, guardamos el estilo actual
+        styleStack.push([styleStack]);
+        break;
+      case "}":
+        // Cerrar bloque, restauramos el estilo anterior
+        styleStack = styleStack.pop() || [];
+        break;
+      case "\\b":
+        styleStack.push("b");
+        break;
+      case "\\i":
+        styleStack.push("i");
+        break;
+      case "\\cf6":
+        styleStack.push("red");
+        break;
+      case "\\cf10":
+        styleStack.push("grey");
+        break;
+      default:
+        // Es texto
+        let text = token;
+
+        // Aplicar estilos acumulados
+        styleStack.forEach(style => {
+          if (style === "b") text = `<b>${text}</b>`;
+          else if (style === "i") text = `<i>${text}</i>`;
+          else if (style === "red") text = `<span style="color:red">${text}</span>`;
+          else if (style === "grey") text = `<span style="color:grey">${text}</span>`;
+        });
+
+        html += text;
+        break;
+    }
+  });
+
+  return html;
+}
+
+
+
+
+
+// BLOQUE 2 — Función principal drawViz()
+
+  // Toda la lógica está dentro de esta función, que dibuja la visualización dentro del div#viz.
+  // Se invoca al final del archivo cuando el DOM está listo.
+  // Dentro de drawViz(), se pueden distinguir 8 subbloques funcionales:
+
+async function drawViz() {
+
+  // Datos de nodes y links  --> Renumerar 
+	// nodes: representa los capítulos de la Biblia (por ejemplo “Génesis 1”).
+  	// verses: indica cuántos versículos tiene cada capítulo (para escalar la barra vertical).
+  const nodes = await loadNodes();
+  // links: pares de relaciones entre capítulos, que se dibujarán como arcos.
+  const links = await loadLinks();
+
+  // Define variables según funcion "initCanvas()"
+  const { svg, ctx, g, innerWidth, innerHeight, grafWidth, grafHeight, margin, color } = initCanvas();
+
+	// Crear escalas de forma centralizada
+  const { baselineY, xBand, angleScale } = createScales(nodes, innerWidth, innerHeight);
+
+	// Asignación de coordenadas
+	layoutNodes(nodes, innerWidth, baselineY);
+
+	// Mapeo de nodos
+	const nodesMap = new Map(nodes.map(n => [n.id, n]));
+
+	// Dibujar links
+	drawLinks(ctx, links, nodesMap, baselineY);
+
+
+	// 2.4. Agrupamiento de capítulos por libro
+		// Aquí se prepara una estructura jerárquica
+		// Extrae el nombre del libro (“Génesis” de “Génesis 1”), agrupa capítulos por libro y crea un <g> SVG por cada libro.
+		// Esto permite aplicar estilos o transformaciones colectivas.
+  
+	// Agrupar nodos por libro -- INICIO
+	// Asegurar que cada nodo tenga un campo 'book' 
+	nodes.forEach(d => {d.book = d.id.replace(/\s+\d+$/, '').trim();}); // extrae "Génesis" de "Génesis 1"
+		// Agrupar los capítulos por libro
+	const books = d3.group(nodes, d => d.book);
+
+	// Crear un <g> por libro
+	const bookGroups = g.selectAll(".book-group")
+		.data(Array.from(books), d => d[0])
+		.join("g")
+		.attr("class", "book-group")
+		.attr("id", d => `book-${d[0].replace(/\s+/g, '-')}`);
+
+		// Agrupar nodos por libro -- FIN
+
+	// 2.5. Escalas y posiciones
+
+		// Define cómo se ubican los elementos en el eje X y la altura de las barras:
+			// x: ubica cada capítulo equidistantemente.
+			// yScale: convierte número de versículos en altura.
+			// baselineY: marca la línea base desde donde “crecen” las barras.
+	// const x = d3.scalePoint()
+	// 	.domain(nodes.map(d => d.id))
+	// 	.range([0, innerWidth * 0.995])
+	// 	.padding(0.5);
+
+		// Escala vertical para la altura de las barras (versículos)
+	const yScale = d3.scaleLinear()
+		.domain([0, d3.max(nodes, d => d.verses)])
+		.range([0, (innerHeight/4) * 0.95 / 4]); // ajustá el /2 según la altura que quieras, se deja /4
+
+		// Línea base ubicada en la parte inferior del área interna
+	// const baselineY = innerHeight * 0.95 ;
+
+	// 	// Asigna coordenadas a cada nodo
+	// nodes.forEach(d => {d.x = x(d.id);d.y = baselineY;});
+
+	// 2.6. Dibujo de la línea base y escalas de color
+
+		// Línea horizontal base (desde donde bajan las barras). Sirve como guía visual del eje donde se apoyan las barras.
+	g.append("line")
+		.attr("x1", 0)
+		.attr("x2", innerWidth * 0.995)
+		.attr("y1", baselineY)
+		.attr("y2", baselineY)
+		.attr("stroke", "#202020ff")
+		.attr("stroke-width", 1)
+		.attr("opacity", 0.8);
+
+		// Define escalas de grises y listas de libros del AT y NT. 
+	const grayColors = {
+		ot: ["#CCCCCC", "#999999"], // tonos claros (Antiguo Testamento)
+		nt: ["#666666", "#333333"]  // tonos oscuros (Nuevo Testamento)
+	};
+
+		// Listado de libros del Antiguo y Nuevo Testamento. Estas listas (oldTestamentBooks, newTestamentBooks) permiten identificar de qué testamento es cada capítulo.
+	const oldTestamentBooks = [
+		"Génesis","Éxodo","Levítico","Números","Deuteronomio","Josué","Jueces","Rut",
+		"1 Samuel","2 Samuel","1 Reyes","2 Reyes","1 Crónicas","2 Crónicas","Esdras",
+		"Nehemías","Ester","Job","Salmos","Proverbios","Eclesiastés","Cantares",
+		"Isaías","Jeremías","Lamentaciones","Ezequiel","Daniel","Oseas","Joel","Amós",
+		"Abdías","Jonás","Miqueas","Nahúm","Habacuc","Sofonías","Hageo","Zacarías","Malaquías"
+	];
+	const newTestamentBooks = [
+		"Mateo","Marcos","Lucas","Juan","Hechos","Romanos","1 Corintios","2 Corintios",
+		"Gálatas","Efesios","Filipenses","Colosenses","1 Tesalonicenses","2 Tesalonicenses",
+		"1 Timoteo","2 Timoteo","Tito","Filemón","Hebreos","Santiago","1 Pedro","2 Pedro",
+		"1 Juan","2 Juan","3 Juan","Judas","Apocalipsis"
+	];
+
+		// Crea mapas (otIndexMap, ntIndexMap) para ubicar rápidamente cada libro.
+	const otIndexMap = new Map();
+	oldTestamentBooks.forEach((b, i) => otIndexMap.set(b.toLowerCase().replace(/\s+/g, ' ').trim(), i));
+
+	const ntIndexMap = new Map();
+	newTestamentBooks.forEach((b, i) => ntIndexMap.set(b.toLowerCase().replace(/\s+/g, ' ').trim(), i));
+
+		// Función auxiliar para extraer y normalizar el nombre del libro
+	function extractBook(id) {
+		if (!id) return '';
+		let s = String(id).trim();
+		// si viene con versículo "Libro X:Y", quitar ":Y"
+		s = s.replace(/:\s*\d+$/, '').trim();
+		// si viene "Libro Capítulo" quitar el capítulo al final -> deja "1 Corintios" o "Génesis"
+		s = s.replace(/\s+\d+$/, '').trim();
+		// insertar espacio si el formato fuera "1Corintios" -> "1 Corintios"
+		s = s.replace(/^(\d)([^\s])/,'$1 $2');
+		// normalizar espacios múltiples
+		s = s.replace(/\s+/g, ' ').trim();
+		return s;
+	}
+
+		// Extrae solo "Libro Capítulo" de "Libro Capítulo:Versículo"
+	function extractBookChapter(ref) {
+		if (!ref) return '';
+		let s = String(ref).trim();
+		// quita el versículo (todo después de ":")
+		s = s.replace(/:\s*\d+$/, '').trim();
+		// si viene sin espacio, lo agrega (1Corintios -> 1 Corintios)
+		s = s.replace(/^(\d)([^\s])/, '$1 $2');
+		return s;
+	}
+
+
+		// Función getGrayColor decide el color gris (claro u oscuro) alternando entre libros de AT/NT.
+	function getGrayColor(node) {
+		const book = extractBook(node.id);
+		const key = book.toLowerCase();
+		if (otIndexMap.has(key)) {
+			const index = otIndexMap.get(key);
+			return grayColors.ot[index % 2]; // alterna por libro en OT
+		}
+		if (ntIndexMap.has(key)) {
+			const index = ntIndexMap.get(key);
+			return grayColors.nt[index % 2]; // alterna por libro en NT
+		}
+		return "#999"; // fallback si no se reconoce
+	}
+	
+	// 2.7. Barras verticales por capítulo
+
+		// Cada grupo de libro genera un path con líneas verticales (una por capítulo):
+		// Barras INICIO 
+	const bars = bookGroups
+		.append("path")
+		.attr("class", "bars-group")
+		.attr("fill", "red")
+		.attr("stroke", d => getGrayColor(d[1][0])) // color por libro
+		.attr("stroke-width", 1)
+		.attr("opacity", 1)
+		.attr("d", d => {
+			const chapters = d[1];
+			let path = "";
+			// Calcula la posición y altura de cada barra según los versículos (yScale).
+			chapters.forEach(ch => {
+				const x = ch.x;
+				const y1 = baselineY;
+				const y2 = baselineY + yScale(ch.verses); 
+				path += `M${x},${y1} L${x},${y2} `;
+			});
+			return path.trim();
+		})
+		// Los eventos .on("mousemove") y .on("mouseleave") para:
+				// Resaltar barras cercanas al mouse.
+				// Mostrar una etiqueta vertical del capítulo más próximo.
+				// Esto crea un efecto de “zoom” contextual.
+		.on("mouseenter", function (event) {
+			// posición X del mouse
+			const [mouseX] = d3.pointer(event);
+			// encontrar el capítulo más cercano a X
+			const allNodes = nodes;
+			const closest = allNodes.reduce((a, b) => Math.abs(b.x - mouseX) < Math.abs(a.x - mouseX) ? b : a);
+			// vecinos para efecto zoom
+			const index = allNodes.indexOf(closest);
+			const neighbors = allNodes.slice(Math.max(0, index - 2), index + 3);
+			// Evitar recalcular todas las barras en cada pixel de movimiento
+			if (!window._lastClosest || window._lastClosest.id !== closest.id) {
+				window._lastClosest = closest;
+				g.selectAll(".bars-group")
+					.attr("stroke-width", d => {
+						const groupNodes = d[1];
+						return groupNodes.some(n => neighbors.includes(n)) ? 1.25 : 1;
+					})
+					.attr("opacity", d => {
+						const groupNodes = d[1];
+						return groupNodes.some(n => neighbors.includes(n)) ? 1.5 : 0.25;
+					});
+			}            
+		})
+		.on("mouseleave", function () {
+			g.selectAll(".bars-group")
+				.attr("stroke-width", 1)
+				.attr("opacity", 1);
+			g.selectAll(".hover-label").remove();
+		});
+		//Barras FIN
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+
+		// Barras - INICIO  
+		// Variables - Definición
+		const svgBar = g; //d3.select("svg"); // Variable donde se va a dibujar el svg de d3
+		const data_vers = Object.fromEntries(nodes.map(n => [n.id, n.verses])); // Reemplaza datos de prueba por reales.
+		const h = 15; // Altura base de cada bloque
+		const baseHeight = 300; // Altura del area de las barras (para detectar mouse)
+		const vers = Object.values(data_vers); // Cantidad de versículos 
+		const libCap = Object.keys(data_vers); // Cantidad de libros+cap
+		
+		// Calcula los límites mínimo y máximo de cx en los nodos
+		const minX = d3.min(nodes, d => d.x);
+		const maxX = d3.max(nodes, d => d.x);
+
+		// Barras - Creación en HTML
+		const barsVers = svgBar.selectAll("g.barVer") // Asigna todos los elementos "g" de class="barVer" a la variable "barsVers"
+			.data(Object.entries(data_vers))   
+			.enter()
+			.append("g")  // Agrega el elemento "g"
+			.attr("class", "barVer")     // Asigna class="bar"
+			.attr("transform", (d, i) => `translate(${xBand(i)},0)`); // Reubica según la escala definida en "x"
+
+		// Barras Area Mouse - Creación en HTML
+		barsVers.append("rect") // Rectángulos base visibles (para detectar dónde pasar el mouse) 
+			.attr("x", 0) // 0 de x
+			.attr("y", baselineY) // 0 de y
+			.attr("width", xBand.bandwidth()) // Ancho de area según escala X
+			.attr("height", baseHeight) // Alto de area según escala X 
+			.attr("fill", "transparent"); // Relleno transparente para que no se vea
+
+		// Barras - Detección de mouse entrante
+		barsVers.on("mouseenter", function(event, [clave, valor]) { // Se usa mouseenter/mouseleave para evitar disparos por bubbling entre hijos (que si suceden con mouseover/mouseout)
+				const g = d3.select(this);
+				g.selectAll(".dyn-block").interrupt().remove(); // Quita cualquier contenido dinámico previo de bloque o texto. Evita duplicados si el mouse entra rápido varias veces
+				g.selectAll(".dyn-text").interrupt().remove();  // Quita cualquier contenido dinámico previo de bloque o texto. Evita duplicados si el mouse entra rápido varias veces
+				const bloques = d3.range(valor);    // Prepara un array [0..valor-1] para hacer un data-join (más eficiente que append en loop)
+				const gDyn = g.append("g").attr("class", "dyn-layer");
+
+				
+
+				// Etiqueta vertical (Libro + Capítulo)
+				g.append("text")
+					.attr("class", "dyn-label")
+					.attr("x", xBand.bandwidth() / 2)
+					.attr("y", baselineY - 50)  
+					.attr("text-anchor", "middle")
+					.attr("font-size", 14)
+					.attr("font-weight", "bold")
+					.attr("fill", "#333")
+					.attr("transform", `rotate(-90, ${xBand.bandwidth() / 2}, ${baselineY - 50})`)
+					.text(clave);
+
+				// Bloques - Creación en HTML
+				gDyn.selectAll(".dyn-block")   // data-join para rects (cada bloque tendrá la clase .dyn-block)
+						.data(bloques, d => d)
+						.enter()
+						.append("rect") // En HTML agrega a cada elemento "g" el elemento "rect" 
+						.attr("class", "dyn-block") // A cada "rect" le asigna la class="dyn-block"
+						.attr("x", 0)   // X inicial
+						.attr("y", baselineY)   // Y inicial
+						.attr("width", xBand.bandwidth())   // Ancho 
+						.attr("height", h)  // Alto
+						.attr("fill", "#e71414ff")   // Color de fondo visible
+						.attr("stroke", "#01939dff")
+						.attr("opacity", 0.9)
+						.transition()
+						.delay(d => d * 10)  // Animación escalonada
+						.duration(10)  // Duración de toda la transición      
+						.attr("fill", "#e71414ff")   // Color de fondo visible
+						.attr("stroke", "#01939dff")
+						.attr("opacity", 1)
+						.attr("y", d => baselineY + (d + 1) * h);    // Posición final (de arriba hacia abajo)
+
+				// Textos - Creación HTML 
+				gDyn.selectAll(".dyn-text")    // data-join para textos (clase .dyn-text)
+						.data(bloques, d => d)
+						.enter()
+						.append("text") // En HTML agrega a cada elemento "g" el elemento "text" 
+						.attr("class", "dyn-text")  // A cada "text" le asigna la class="dyn-text"
+						.attr("y", d => baselineY + (d + 1) * h + h / 2)   // Posición final del texto, centrado en su bloque
+						.attr("x", xBand.bandwidth() / 2)   // Centra texto en X de bloque
+						.attr("font-size", 14)  
+						.attr("text-anchor", "middle")
+						.text(d => d + 1) // Número del versículo (Comienza en 0)
+						.attr("opacity", 0)
+						.transition()
+						.delay(d => d * 30) // Animación de cada bloque escalonada
+						.duration(300)  // Duración de toda la transición      
+						.attr("opacity", 1);
+
+				})
+		// Barras - Detección de mouse saliente    
+		barsVers.on("mouseleave", function() {
+				const gDyn = d3.select(this);
+
+				g.selectAll(".dyn-label")
+					.interrupt()
+					.transition()
+					.duration(10)
+					.attr("opacity", 0)
+					.on("end", function() { d3.select(this).remove(); });
+
+				gDyn.selectAll(".dyn-block")   // Anima la salida de bloques (los hace "subir" y luego los quita al terminar)
+						.interrupt()    // Cancela cualquier transición en curso
+						.transition()
+						.duration(10)  // Duración de toda la transición 
+						.attr("y", baselineY)   // Vuelven arriba
+						.attr("height", 0)  // Quita altura 
+						.on("end", function() { d3.select(this).remove(); }); // Se eliminan al terminar
+
+				gDyn.selectAll(".dyn-text")    // Anima la salida de textos y los quita al terminar
+						.interrupt()    // Cancela cualquier transición en curso
+						.transition()
+						.duration(10)  // Duración de toda la transición 
+						.attr("y", baselineY)   // Vuelven arriba
+						.on("end", function() { d3.select(this).remove(); });   // Se eliminan al terminar
+		});    
+//////////////////////////////////////////////////////////////////////////////////////////////         
+
+	// 2.8. Arcos entre capítulos
+
+		// Se crean en dos pasos:
+			// Arcos estáticos (visuales):
+
+				// Arcos estáticos INICIO
+				// Dibuja todos los arcos estáticos en un solo path 
+	const arcsPath = links.map(d => {
+		const s = nodes.find(n => n.id === extractBookChapter(d.source));
+		const t_i = nodes.find(n => n.id === extractBookChapter(d.target_ini));
+		const t_f = nodes.find(n => n.id === extractBookChapter(d.target_fin));
+		if (!s || !t_i) return "";
+		const x1 = s.x;
+		const x2 = t_i.x;
+		const y = baselineY;
+		const r = Math.abs(x2 - x1) / 2;
+		const sweep = x1 < x2 ? 1 : 0;
+		return `M${x1},${y} A${r},${r} 0 0,${sweep} ${x2},${y}`;
+	}).join(" ");
+				// Dibuja todos los arcos de una vez
+	g.append("path")
+		.attr("class", "links-group")
+		.attr("fill", "none")
+		.attr("stroke", "#82afcbff") // color neutro, si se quiere escala probar d3.interpolateCool()
+		.attr("stroke-width", 1.2)
+		.attr("opacity", 0.7)
+		.attr("d", arcsPath)
+		.lower();
+				// Arcos estáticos FIN
+
+
+			// Arcos dinámicos (interactivos):
+				// Arcos dinámicos INICIO  
+
+					// Crea una capa invisible con trazos anchos para capturar el hover.
+					// Al pasar el mouse sobre un arco:
+						// Se dibuja un arco naranja destacado.
+						// Aparece una etiqueta con la relación (source → target).
+						// Al salir, se limpian los elementos temporales.
+	const gInteractive = g.append("g").attr("class", "interactive-links");
+	const hoverPaths = gInteractive.selectAll("path.hover")
+		.data(links)
+		.join("path")
+		.attr("class", "hover")
+		.attr("fill", "none")
+		.attr("stroke", "transparent")
+		.attr("stroke-width", 8) // ancho grande solo para capturar hover
+		.attr("d", d => {
+			const s = nodes.find(n => n.id === extractBookChapter(d.source));
+			const t_i = nodes.find(n => n.id === extractBookChapter(d.target_ini));
+			const t_f = nodes.find(n => n.id === extractBookChapter(d.target_fin));
+			if (!s || !t_i) return "";
+			const x1 = s.x, x2 = t_i.x, y = baselineY;
+			const r = Math.abs(x2 - x1) / 2;
+			const sweep = x1 < x2 ? 1 : 0;
+			return `M${x1},${y} A${r},${r} 0 0,${sweep} ${x2},${y}`;
+		})
+		.on("mouseover", function (event, d) {                    
+			// Determinar qué cita va a la izquierda y cuál a la derecha según la posición X
+			const sNode = nodes.find(n => n.id === extractBookChapter(d.source));
+			const tNode = nodes.find(n => n.id === extractBookChapter(d.target_ini));
+
+			if (!sNode || !tNode) return;
+
+			// Determinar el orden visual
+			let leftText, rightText, leftLabel, rightLabel;
+
+			if (sNode.x < tNode.x) {
+				leftLabel = d.source;
+				leftText = d.text_source || "";
+				rightLabel = d.target_ini;
+				rightText = d.text_target || "";
+			} else {
+				leftLabel = d.target_ini;
+				leftText = d.text_target || "";
+				rightLabel = d.source;
+				rightText = d.text_source || "";
+			}
+
+			// Limitar longitud
+			const maxChars = 300;
+			leftText = leftText.length > maxChars ? leftText.slice(0, maxChars) + "..." : leftText;
+			rightText = rightText.length > maxChars ? rightText.slice(0, maxChars) + "..." : rightText;
+
+			// Asignar a las cajas
+			document.getElementById("sourceBox").innerHTML = `<b>${leftLabel}</b><br>${parseRTFtoHTMLAdvanced(leftText)}`;
+			document.getElementById("targetBox").innerHTML = `<b>${rightLabel}</b><br>${parseRTFtoHTMLAdvanced(rightText)}`;
+
+			// Dibujar temporalmente el arco resaltado
+			g.append("path")
+				.attr("class", "highlight-arc")
+				.attr("fill", "none")
+				.attr("stroke", "#ff6600")
+				.attr("stroke-width", 2.5)
+				.attr("opacity", 1)
+				.attr("d", d3.select(this).attr("d"));
+			// Mostrar etiqueta en el centro del arco
+				const s = nodes.find(n => n.id === extractBookChapter(d.source));
+				const t_i = nodes.find(n => n.id === extractBookChapter(d.target_ini));
+				const t_f = nodes.find(n => n.id === extractBookChapter(d.target_fin));
+			if (!s || !t_i) return;
+			// INICIO Lógica para asegurar el orden por posición (x)
+			let displayText;
+
+			// Determinar dirección visual (izq→der o der→izq)
+			const isForward = s.x < t_i.x;
+
+			// Función para elegir separador según alcance
+			function getRangeSeparator(refIni, refFin) {
+				const iniParts = refIni.split(/[:\s]+/);
+				const finParts = refFin.split(/[:\s]+/);
+				const iniLibro = iniParts.slice(0, iniParts.length - 2).join(" ");
+				const finLibro = finParts.slice(0, finParts.length - 2).join(" ");
+				const iniCap = iniParts[iniParts.length - 2];
+				const finCap = finParts[finParts.length - 2];
+
+				if (iniLibro !== finLibro) return "---"; // entre libros
+				if (iniCap !== finCap) return "--";      // entre capítulos
+				return "-";                              // dentro del mismo capítulo
+			}
+
+			// Función para dividir referencia (libro, cap, vers)
+			const parseRef = ref => {
+				const parts = ref.split(/[:\s]+/);
+				const libro = parts.slice(0, parts.length - 2).join(' ');
+				const cap = parts[parts.length - 2];
+				const vers = parts[parts.length - 1];
+				return { libro, cap, vers };
+			};
+
+			// Si hay rango de destino
+			if (d.target_ini !== d.target_fin) {
+				const sep = getRangeSeparator(d.target_ini, d.target_fin);
+				const ini = parseRef(d.target_ini);
+				const fin = parseRef(d.target_fin);
+
+				// Si el libro es el mismo, mostrarlo una sola vez
+				let rangoTexto;
+				if (ini.libro === fin.libro && ini.cap !== fin.cap) {
+					rangoTexto = `${ini.libro} ${ini.cap}:${ini.vers}${sep}${fin.cap}:${fin.vers}`;
+				} else if (ini.libro === fin.libro && ini.cap === fin.cap) {
+					rangoTexto = `${ini.libro} ${ini.cap}:${ini.vers}${sep}${fin.vers}`;
+				}
+					else {
+					rangoTexto = `${ini.libro} ${ini.cap}:${ini.vers}${sep}${fin.libro} ${fin.cap}:${fin.vers}`;
+				}
+
+				displayText = isForward
+					? `${d.source} → ${rangoTexto}`
+					: `${rangoTexto} → ${d.source}`;
+			}
+			// Si es una referencia directa (sin rango)
+			else {
+				displayText = isForward
+					? `${d.source} → ${d.target_ini}`
+					: `${d.target_ini} → ${d.source}`;
+			}
+			// FIN Lógica de orden por posición (x)
+			const midX = (s.x + t_i.x) / 2;
+			const midY = baselineY - Math.abs(t_i.x - s.x) / 3;
+			g.append("text")
+				.attr("class", "arc-label")
+				.attr("x", midX)
+				.attr("y", midY)
+				.attr("text-anchor", "middle")
+				.attr("font-size", 14)
+				.attr("fill", "#333")
+				// Usar las variables reordenadas basadas en 'x'
+				.text(`${displayText}`);
+
+			// ------------------ INICIA BLOQUE: dibujar textos por columnas y comprobar espacio ------------------
+			
+			// ------------------ FIN BLOQUE ------------------
+		})
+		.on("mouseout", function () {
+			g.selectAll(".highlight-arc").remove();
+			g.selectAll(".arc-label").remove();
+			//Limpiar el contenido de las cajas (div) de texto de los versiculos
+			document.getElementById("sourceBox").innerHTML = "";
+			document.getElementById("targetBox").innerHTML = "";
+		});
+				// Arcos dinámicos FIN
+
+	// 2.9. Nodos: círculos 
+		// Añade pequeños puntos en la base de cada barra, representando los capítulos.
+	// g.selectAll("circle.node")
+	// 	.data(nodes)
+	// 	.join("circle")
+	// 	.attr("r", 1)
+	// 	.attr("cx", d => d.x)
+	// 	.attr("cy", d => d.y)
+	// 	.attr("fill", d => color(d.id));
+
+	// 2.10. Centrado de todo el gráfico
+
+	// -- NUEVO: calcular altura del "encabezado" (las cajas) + separación deseada (40px)
+	const headerHeight = Math.max(sourceBox.offsetHeight, targetBox.offsetHeight) + 40; // 40px separación
+
+	//	Dibujar nodos --> Los dibujo al final para que queden al frente de todo. 
+	drawNodes(g, nodes, color);
+
+	//	Interacción de nodos
+	nodeInteractions(g, nodes, links, nodesMap, baselineY, xBand, yScale);
+
+	// Calcular el bounding box de todo el grupo
+	const bbox = g.node().getBBox();
+
+	// Calcular el centro del área visible y desplazar todo el gráfico hacia abajo por headerHeight
+	const offsetX = (grafWidth - bbox.width) / 2 - bbox.x;
+	const offsetY = headerHeight - bbox.y;
+
+	// Aplicar el centrado + desplazamiento vertical
+	g.attr("transform", `translate(${offsetX}, ${offsetY})`);
+
+}
+
+// BLOQUE 3 — Variables globales y ejecución
+
+  // Llamar al render del gráfico
+    // Espera a que todo el contenido HTML del documento esté completamente cargado antes de ejecutar el script.
+    // Esto evita errores de elementos aún no disponibles en el DOM (como #viz). 
+document.addEventListener("DOMContentLoaded", () => {drawViz();});
 

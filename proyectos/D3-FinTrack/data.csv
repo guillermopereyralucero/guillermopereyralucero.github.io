@@ -1,0 +1,262 @@
+source,target,value
+SueldoG,Ingresos,2518.64
+SueldoK,Ingresos,2011.02
+Cochera,Ingresos,7.75
+Alvear,Ingresos,207.79
+Youtube,Ingresos,12.27
+Ajuste,Ingresos,237.53
+Ingresos,Prestamo-G,544.31
+Ingresos,IBERIA SEQURA,273.64
+Ingresos,Fracción 1,153.66
+Ingresos,Fracción 2,59.36
+Ingresos,IBERIA LAE SA Operadora,103.69
+Ingresos,IBERIA LAE SA Operadora,103.68
+Ingresos,Cetelem,211.73
+Ingresos,oney-leroy,40.21
+Prestamo-G,Financiación,544.31
+IBERIA SEQURA,Financiación,273.64
+Fracción 1,Financiación,153.66
+Fracción 2,Financiación,59.36
+IBERIA LAE SA Operadora,Financiación,103.69
+IBERIA LAE SA Operadora,Financiación,103.68
+Cetelem,Financiación,211.73
+oney-leroy,Financiación,40.21
+Financiación,Deseo,544.31
+Financiación,Deseo,273.64
+Financiación,Deseo,153.66
+Financiación,Deseo,59.36
+Financiación,Deseo,103.69
+Financiación,Deseo,103.68
+Financiación,Deseo,211.73
+Financiación,Deseo,40.21
+Ingresos,SEPHORA COSMETI,47
+Ingresos,ADIDAS,89
+Ingresos,DALUCCI,2.1
+Ingresos,PAGO MOVIL 10365 S.S.REYES,42.47
+Ingresos,PAGO MOVIL TEMPE FOR AND F,39.05
+Ingresos,ZARA MADRID PLA,16.05
+SEPHORA COSMETI,RopaYAccesorios,47
+ADIDAS,RopaYAccesorios,89
+DALUCCI,RopaYAccesorios,2.1
+PAGO MOVIL 10365 S.S.REYES,RopaYAccesorios,42.47
+PAGO MOVIL TEMPE FOR AND F,RopaYAccesorios,39.05
+ZARA MADRID PLA,RopaYAccesorios,16.05
+RopaYAccesorios,Deseo,47
+RopaYAccesorios,Deseo,89
+RopaYAccesorios,Deseo,2.1
+RopaYAccesorios,Deseo,42.47
+RopaYAccesorios,Deseo,39.05
+RopaYAccesorios,Deseo,16.05
+Ingresos,FORNO DE LUGO,7.75
+Ingresos,EL CORTE INGLES,35.75
+Ingresos,BURGUERKING1,28.55
+Ingresos,BURGUERKING2,15.79
+Ingresos,BURGUERKING3,24.5
+Ingresos,BURGUERKING4,22.62
+Ingresos,TAGLIATELLA,37.7
+Ingresos,OSS Kaffe,9
+Ingresos,SOLOPIZZA,18.95
+Ingresos,EL ALBERO,9
+Ingresos,RESTAURANTE KAN,47.1
+Ingresos,VIZZIO DELIVERY SERV,31.95
+Ingresos,CORA GELATO,5
+Ingresos,CORA GELATO,5
+Ingresos,CORA GELATO,7.2
+Ingresos,STARBUCKS FACTO,11.1
+Ingresos,CAFETERIA VIPS,23.3
+Ingresos,IKEA SSDLR FOOD,16.74
+Ingresos,IKEA SSDLR FOOD,2
+Ingresos,GEDEMASA VENDING 2,1
+Ingresos,SABORES EXPRESS,14.5
+Ingresos,FABORIT ALCOBEN,12.75
+FORNO DE LUGO,Restaurante,7.75
+EL CORTE INGLES,Restaurante,35.75
+BURGUERKING1,Restaurante,28.55
+BURGUERKING2,Restaurante,15.79
+BURGUERKING3,Restaurante,24.5
+BURGUERKING4,Restaurante,22.62
+TAGLIATELLA,Restaurante,37.7
+OSS Kaffe,Restaurante,9
+SOLOPIZZA,Restaurante,18.95
+EL ALBERO,Restaurante,9
+RESTAURANTE KAN,Restaurante,47.1
+VIZZIO DELIVERY SERV,Restaurante,31.95
+CORA GELATO,Restaurante,5
+CORA GELATO,Restaurante,5
+CORA GELATO,Restaurante,7.2
+STARBUCKS FACTO,Restaurante,11.1
+CAFETERIA VIPS,Restaurante,23.3
+IKEA SSDLR FOOD,Restaurante,16.74
+IKEA SSDLR FOOD,Restaurante,2
+GEDEMASA VENDING 2,Restaurante,1
+SABORES EXPRESS,Restaurante,14.5
+FABORIT ALCOBEN,Restaurante,12.75
+Restaurante,Deseo,7.75
+Restaurante,Deseo,35.75
+Restaurante,Deseo,28.55
+Restaurante,Deseo,15.79
+Restaurante,Deseo,24.5
+Restaurante,Deseo,22.62
+Restaurante,Deseo,37.7
+Restaurante,Deseo,9
+Restaurante,Deseo,18.95
+Restaurante,Deseo,9
+Restaurante,Deseo,47.1
+Restaurante,Deseo,31.95
+Restaurante,Deseo,5
+Restaurante,Deseo,5
+Restaurante,Deseo,7.2
+Restaurante,Deseo,11.1
+Restaurante,Deseo,23.3
+Restaurante,Deseo,16.74
+Restaurante,Deseo,2
+Restaurante,Deseo,1
+Restaurante,Deseo,14.5
+Restaurante,Deseo,12.75
+Ingresos,AMEX,18.68
+Ingresos,Iberia Plus G,4
+Ingresos,Iberia Viaje G,3
+Ingresos,Prime Video *F45GK2LX5,3.99
+Ingresos,Amazon Prime*RL5W67XY5,4.99
+AMEX,SuscripcionesyOtros,18.68
+Iberia Plus G,SuscripcionesyOtros,4
+Iberia Viaje G,SuscripcionesyOtros,3
+Prime Video *F45GK2LX5,SuscripcionesyOtros,3.99
+Amazon Prime*RL5W67XY5,SuscripcionesyOtros,4.99
+SuscripcionesyOtros,Deseo,18.68
+SuscripcionesyOtros,Deseo,4
+SuscripcionesyOtros,Deseo,3
+SuscripcionesyOtros,Deseo,3.99
+SuscripcionesyOtros,Deseo,4.99
+Ingresos,WWW.AMAZON.BI3LI62F5,99
+WWW.AMAZON.BI3LI62F5,Herramientas,99
+Herramientas,Inversión,99
+Ingresos,BM SAN AGUSTIN,16.31
+Ingresos,BM SAN AGUSTIN,18.92
+Ingresos,BM SAN AGUSTIN,97.57
+Ingresos,BM SAN AGUSTIN,85.52
+Ingresos,BM SAN AGUSTIN,53.41
+Ingresos,BM SAN AGUSTIN,89.61
+Ingresos,BM SAN AGUSTIN,49.33
+Ingresos,BM SAN AGUSTIN,109.57
+Ingresos,GRUPO SUP AHORR,21.28
+Ingresos,DIA RETAIL ESPA,23.55
+Ingresos,FINCAS DE NICARAGUA SL,35
+Ingresos,PUCHERO,41
+Ingresos,SP NATULIM,9.8
+Ingresos,SP NATULIM,17.95
+Ingresos,PANGEA MUNDO NA,4.05
+BM SAN AGUSTIN,ComprasCasa,16.31
+BM SAN AGUSTIN,ComprasCasa,18.92
+BM SAN AGUSTIN,ComprasCasa,97.57
+BM SAN AGUSTIN,ComprasCasa,85.52
+BM SAN AGUSTIN,ComprasCasa,53.41
+BM SAN AGUSTIN,ComprasCasa,89.61
+BM SAN AGUSTIN,ComprasCasa,49.33
+BM SAN AGUSTIN,ComprasCasa,109.57
+GRUPO SUP AHORR,ComprasCasa,21.28
+DIA RETAIL ESPA,ComprasCasa,23.55
+FINCAS DE NICARAGUA SL,ComprasCasa,35
+PUCHERO,ComprasCasa,41
+SP NATULIM,ComprasCasa,9.8
+SP NATULIM,ComprasCasa,17.95
+PANGEA MUNDO NA,ComprasCasa,4.05
+ComprasCasa,Necesidad,16.31
+ComprasCasa,Necesidad,18.92
+ComprasCasa,Necesidad,97.57
+ComprasCasa,Necesidad,85.52
+ComprasCasa,Necesidad,53.41
+ComprasCasa,Necesidad,89.61
+ComprasCasa,Necesidad,49.33
+ComprasCasa,Necesidad,109.57
+ComprasCasa,Necesidad,21.28
+ComprasCasa,Necesidad,23.55
+ComprasCasa,Necesidad,35
+ComprasCasa,Necesidad,41
+ComprasCasa,Necesidad,9.8
+ComprasCasa,Necesidad,17.95
+ComprasCasa,Necesidad,4.05
+Ingresos,FARMACIA-S.AGUS,1
+Ingresos,FARMACIA-S.AGUS,39.45
+Ingresos,FARMACIA-S.AGUS,11.11
+Ingresos,FARMACIA-S.AGUS,15.9
+Ingresos,FARMACIA-S.AGUS,1
+FARMACIA-S.AGUS,Farmacia,1
+FARMACIA-S.AGUS,Farmacia,39.45
+FARMACIA-S.AGUS,Farmacia,11.11
+FARMACIA-S.AGUS,Farmacia,15.9
+FARMACIA-S.AGUS,Farmacia,1
+Farmacia,Necesidad,1
+Farmacia,Necesidad,39.45
+Farmacia,Necesidad,11.11
+Farmacia,Necesidad,15.9
+Farmacia,Necesidad,1
+Ingresos,PARKING-2,13.3
+Ingresos,PARKING-1,10.7
+Ingresos,PARKING-3,4.35
+Ingresos,PARKING-4,4.8
+PARKING-1,Parking,10.7
+PARKING-2,Parking,13.3
+PARKING-3,Parking,4.35
+PARKING-4,Parking,4.8
+Parking,Necesidad,10.7
+Parking,Necesidad,13.3
+Parking,Necesidad,4.35
+Parking,Necesidad,4.8
+Ingresos,AMZN Mktp ES*P48V50QY5,8.98
+Ingresos,DECATHLON DEHES,29.98
+Ingresos,SP SANA NUTRIENTS,27.92
+Ingresos,Wellhub-EU,36.99
+Ingresos,Wellhub-EU,36.99
+AMZN Mktp ES*P48V50QY5,Salud,8.98
+DECATHLON DEHES,Salud,29.98
+SP SANA NUTRIENTS,Salud,27.92
+Wellhub-EU,Salud,36.99
+Wellhub-EU,Salud,36.99
+Salud,Necesidad,8.98
+Salud,Necesidad,29.98
+Salud,Necesidad,27.92
+Salud,Necesidad,36.99
+Salud,Necesidad,36.99
+Ingresos,Cabify ES 2542Disu40AN,46.76
+Ingresos,LLONGUERAS,23
+Ingresos,MADRID NORTE,50.82
+Ingresos,CC ASIATICO,11.1
+Ingresos,WESTERN UNION,32.49
+Ingresos,WESTERN UNION,50
+MADRID NORTE,Otros,50.82
+LLONGUERAS,Otros,23
+Cabify ES 2542Disu40AN,Otros,46.76
+WESTERN UNION,Otros,50
+WESTERN UNION,Otros,32.49
+CC ASIATICO,Otros,11.1
+Otros,Necesidad,50.82
+Otros,Necesidad,23
+Otros,Necesidad,46.76
+Otros,Necesidad,50
+Otros,Necesidad,32.49
+Otros,Necesidad,11.1
+Ingresos,Alquiler,1500
+Ingresos,Luz,56.89
+Ingresos,Agua,15.295
+Ingresos,EOS,20
+Ingresos,DIGI (Moviles),10
+Ingresos,iCloud-G,2.99
+Ingresos,iCloud-K,9.99
+Ingresos,APPLE.COM/BILL,2.99
+Alquiler,Servicios Fijos,1500
+Luz,Servicios Fijos,56.89
+Agua,Servicios Fijos,15.295
+EOS,Servicios Fijos,20
+DIGI (Moviles),Servicios Fijos,10
+iCloud-G,Servicios Fijos,2.99
+iCloud-K,Servicios Fijos,9.99
+APPLE.COM/BILL,Servicios Fijos,2.99
+Servicios Fijos,Necesidad,1500
+Servicios Fijos,Necesidad,56.89
+Servicios Fijos,Necesidad,15.295
+Servicios Fijos,Necesidad,20
+Servicios Fijos,Necesidad,10
+Servicios Fijos,Necesidad,2.99
+Servicios Fijos,Necesidad,9.99
+Servicios Fijos,Necesidad,2.99

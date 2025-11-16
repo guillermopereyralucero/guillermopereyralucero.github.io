@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+    <html lang="es">
+        <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width,initial-scale=1">
+            <title>FinTrack - Visualización de Datos Financieros</title>
+            <link rel="stylesheet" href="style.css">
+            <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+            <script src="https://cdn.jsdelivr.net/npm/d3-sankey@0.12"></script>
+            <script type="module" src="./script.js"></script>
+        </head>
+        <body>
+            <header class="header">
+                <div class="header-div">
+                    <h1 class="title-ppal">FinTrack - Visualización de Datos Financieros</h1>
+                    <p class="subtitle-ppal">Ver y analizar transacciones y categorías de movimientos.</p>
+                </div>
+            </header>
+            <main class="main">
+                <h2 class="title-2">Gráfico de datos financieros</h2>
+                <div class="main-div">
+                    <label>Color de enlaces:</label>
+                    <select id="linkColor">
+                    <option value="source-target">Origen → Destino</option>
+                    <option value="#aaa">Estático</option>
+                    <option value="source">Origen</option>
+                    <option value="target">Destino</option>
+                    </select>
+                </div>
+                <div id="chart"></div>
+            </main>
+            <footer class="footer">
+                <div class="footer-div">
+                    <small>Desarrollado por GPL-Dev.</small>
+                </div>
+            </footer>
+        </body>
+    </html>

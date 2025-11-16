@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+    <html lang="es">
+        <head>
+            <meta charset="utf-8" />
+            <meta name="viewport" content="width=device-width,initial-scale=1" />
+            <title>DataBibs - Visualización de Datos de la Biblia</title>
+            <link rel="stylesheet" type="text/css" href="./style.css">
+            <link rel="icon" href="data:">
+        </head>
+ 
+        <body>
+            <header class="header">
+                <div class="header-div">
+                    <h1 class="title-ppal">DataBibs - Visualización de Datos de la Biblia</h1>
+                    <p class="subtitle-ppal">Explora categorías, filtra y busca referencias</p>
+                </div>
+            </header>
+
+            <main class="main">
+                <h2 class="title-2">Gráfico de referencias bíblicas</h2>
+                <div class="main-div" id="chart-order">
+                    <label for="orderSelect">Ordenar por:</label>
+                    <select id="orderSelect">
+                        <option value="by Bible">Por orden bíblico</option>
+                        <option value="by group">Por género literario</option>
+                        <option value="by name">Por nombre de libro</option>
+                        <option value="by degree">Por cantidad de referencias</option>
+                    </select>
+                </div>
+                <div class="main-div" id="chart"></div>
+            </main>
+
+            <footer class="footer">
+                <div class="footer-div">
+                    <small class="small">Desarrollado por GPL-Dev.</small>
+                </div>
+            </footer>
+            <script src="https://d3js.org/d3.v7.min.js"></script>
+            <script src="./script.js"></script>
+        </body>
+    </html>

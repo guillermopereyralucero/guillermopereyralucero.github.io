@@ -87,16 +87,15 @@ html,body{height:100%;
     overflow:auto deja que elementos sobresalgan del contenedor añadiendo scroll (visible lo hace sin scroll).
     z-index:1 asegura que esté por encima del fondo pero debajo de elementos superiores. */
 
-#viz {width: 99%;
+#viz {width: 98%;
       height: 98%;
-      margin: 20px auto;
+      margin: auto;
       background: #fff;
       border: 1px solid var(--border);
       border-radius: 12px;
       box-shadow: 0 6px 18px rgba(12,18,35,0.06);
       position: relative;
       display: block;
-      overflow: auto;
       z-index: 1;
 }
 
@@ -104,12 +103,35 @@ html,body{height:100%;
 
 svg {
   display: block;
+  margin: auto; 
+}
+
+canvas {
+  display: block;
+  margin: auto; 
+}
+
+/* Estilo de los bloques que contienen los numeros de los versículos */
+
+
+
+.dyn-block {
+  fill: #000000;         
+  stroke: #10a310;        
+  stroke-width: 1;
+  rx: 90;
+  ry: 90;
+  opacity: 0.9;
 }
 
 
-/* Asegura que la sección de contenido adicional esté en la capa base también, sin cubrir ni quedar cubierta por el gráfico. */
-
-#content {
-  position: relative;
-  z-index: 0;
+.dyn-layer {
+  fill: #d41999;
+  /* stroke: #00ff11af; */ 
+  background: #0000;
+  stroke-width: 0.5;
+  rx: 3;
+  ry: 3;
+  opacity: 0.9;
 }
+
