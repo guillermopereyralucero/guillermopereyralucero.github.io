@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+    <html lang="es">
+        <head>
+            <meta charset="utf-8" />
+            <meta name="viewport" content="width=device-width,initial-scale=1" />
+            <title>FinTrack - Visualización de Datos Financieros</title>
+            <link rel="stylesheet" type="text/css" href="./style.css">
+            <link rel="icon" href="data:">
+        </head>
+
+        <body>
+            <header class="header">
+                <div class="header-div">
+                    <h1 class="title-ppal">FinTrack - Visualización de Datos Financieros</h1>
+                    <p class="subtitle-ppal">Explorar por tipos, tiempo o flujo</p>
+                </div>
+            </header>
+
+            <main class="main">
+                <h2 class="title-2">Gráfico de datos financieros</h2>
+
+                <div class="main-div" id="color-selector">
+                    <label for="orderSelect">Color de enlaces:</label>
+                    <select id="orderSelect">
+                        <option value="by Bible">Origen-Destino</option>
+                        <option value="by group">Estático</option>
+                        <option value="by name">Origen</option>
+                        <option value="by degree">Destino</option>
+                    </select>
+                </div>
+
+                <div class="main-div" id="chart">
+                    <script type="module">
+                        import define from "./script.js";
+                        import {Runtime, Library, Inspector} from "./runtime.js";
+                        const runtime = new Runtime();
+                        const main = runtime.module(define, Inspector.into(document.querySelector("#chart")));
+                    </script>
+                </div>
+            </main>
+
+            <footer class="footer">
+                <div class="footer-div">
+                    <small class="small">Desarrollado por GPL-Dev.</small>
+                </div>
+            </footer>
+        </body>
+    </html>
