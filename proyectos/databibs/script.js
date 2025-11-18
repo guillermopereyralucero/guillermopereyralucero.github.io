@@ -120,7 +120,7 @@ function layoutNodes(nodes, innerWidth, baselineY) {
 }
 
 
-// Función - Dibujar enlaces --> Dibujar los arcos / curvas entre nodos (links) --> Usar ctx canvas) para dibujar --> Usar las escalas dentro del parámetro scales --> NO debe calcular posiciones de nodos --> NO debe manipular SVG --> NO debe agregar eventos
+// Función - Dibujar enlaces --> Dibujar los arcos / curvas entre nodos (links) --> Usar ctx canvas para dibujar --> Usar las escalas dentro del parámetro scales --> NO debe calcular posiciones de nodos --> NO debe manipular SVG --> NO debe agregar eventos
 function drawLinks(ctx, links, nodesMap, baselineY) {
 	ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 	ctx.lineWidth = 1.2;
@@ -224,55 +224,17 @@ function nodeInteractions(svgGroup, nodes, links, nodesMap, baselineY, xBand, yS
 					});
 				})
 
-				// // Barras - Creación en HTML
-				// const nodesArea = svgGroup.selectAll("circle.node") // Asigna todos los elementos "g" de class="barVer" a la variable "barsVers"
-				// 	// .data(Object.entries(data_vers))   
-				// 	.enter()
-				// 	.append("g")  // Agrega el elemento "g"
-				// 	.attr("class", "nodeArea")     // Asigna class="bar"
-				// 	.attr("transform", (d, i) => `translate(${xBand(i)},0)`); // Reubica según la escala definida en "x"
-
-				// // Barras Area Mouse - Creación en HTML
-				// nodesArea.append("circ") // Rectángulos base visibles (para detectar dónde pasar el mouse) 
-				// 	.attr("x", 0) // 0 de x
-				// 	.attr("y", baselineY) // 0 de y
-				// 	.attr("r", 1) // Ancho de area según escala X
-				// 	.attr("fill", "transparent"); // Relleno transparente para que no se vea
-
-
-
-
 				// Barras - Detección de mouse entrante
-				.on("mouseenter", function(event, [clave, valor]) { // Se usa mouseenter/mouseleave para evitar disparos por bubbling entre hijos (que si suceden con mouseover/mouseout)
-						const g = d3.select(this);
-						// g.selectAll(".dyn-block").interrupt().remove(); // Quita cualquier contenido dinámico previo de bloque o texto. Evita duplicados si el mouse entra rápido varias veces
-						// g.selectAll(".dyn-text").interrupt().remove();  // Quita cualquier contenido dinámico previo de bloque o texto. Evita duplicados si el mouse entra rápido varias veces
-						const bloques = d3.range(valor);    // Prepara un array [0..valor-1] para hacer un data-join (más eficiente que append en loop)
-						const gDyn = g.append("g").attr("class", "dyn-layer");
-
-					// Etiqueta vertical (Libro + Capítulo)
-					g.append("text")
-						.attr("class", "dyn-label")
-						.attr("x", xBand.bandwidth() / 2)
-						.attr("y", baselineY - 50)  
-						.attr("text-anchor", "middle")
-						.attr("font-size", 14)
-						.attr("font-weight", "bold")
-						.attr("fill", "#333")
-						.attr("transform", `rotate(-90, ${xBand.bandwidth() / 2}, ${baselineY - 50})`)
-						.text(clave)
-						.raise();
+				.on("mouseenter", function (event, d) { // Se usa mouseenter/mouseleave para evitar disparos por bubbling entre hijos (que si suceden con mouseover/mouseout)
+					const clave = d.id; // libro+capítulo igual que en bars
+					const barGroup = d3.select(`g.barVer[data-id='${clave}']`);
+					showLabel(barGroup, clave, xBand, baselineY);
 				})
 
 				// Nodos - Detección de mouse saliente    
-				.on("mouseleave", function() {
-						const gDyn = d3.select(this);
-						g.selectAll(".dyn-label")
-							.interrupt()
-							.transition()
-							.duration(10)
-							.attr("opacity", 0)
-							.on("end", function() { d3.select(this).remove(); });
+				.on("mouseleave", function (event, d) {
+					const barGroup = d3.select(`g.barVer[data-id='${d.id}']`);
+					hideLabel(barGroup);
 				})
 
         .on("mouseout", function(event, d) {
@@ -295,7 +257,7 @@ function nodeInteractions(svgGroup, nodes, links, nodesMap, baselineY, xBand, yS
                 .data(blocks)
                 .join("rect")
                 .attr("class", "dyn-block-node")
-                .attr("x", nodeX - xBand.bandwidth()/2)
+                .attr("x", nodeX - xBand.bandwidth())
                 .attr("y", nodeY)
                 .attr("width", xBand.bandwidth())
                 .attr("height", blockHeight)
@@ -325,6 +287,84 @@ function nodeInteractions(svgGroup, nodes, links, nodesMap, baselineY, xBand, yS
 							.attr("opacity", 1);					
         });
 };
+
+
+// Función - Barras de versiculos y etiquetas Lib+Cap
+
+function setupBars(g, nodes, baselineY, xBand) {
+    // --- Variables internas ---
+    const data_vers = Object.fromEntries(nodes.map(n => [n.id, n.verses]));
+    const baseHeight = 300;  
+    const h = 15;
+    // Crear selección
+    const barsVers = g.selectAll("g.barVer")
+        .data(Object.entries(data_vers))
+        .enter()
+        .append("g")
+        .attr("class", "barVer")
+				.attr("data-id", d => d[0])
+        .attr("transform", (d, i) => {
+					// d = [clave, valor] -> clave es el id 'Libro Cap' que coincide con node.id
+					const nodeId = d[0];
+					const node = nodes.find(n => n.id === nodeId);
+					// si no encontramos nodo, caemos en xBand(i) como fallback
+					const cx = node ? node.x : xBand(i) + xBand.bandwidth() / 2;
+					// queremos que el grupo se ubique de forma que 0..bandwidth() quede centrado en cx
+					const gx = cx - xBand.bandwidth() / 2;
+					return `translate(${gx},0)`;
+				});
+    // Área de mouse (transparente)
+    barsVers.append("rect")
+        .attr("x", 0)
+        .attr("y", baselineY)
+        .attr("width", xBand.bandwidth())
+        .attr("height", baseHeight)
+        .attr("fill", "transparent");
+    // EVENTOS
+		barsVers.on("mouseenter", function(event, [clave, valor]) {
+				const gThis = d3.select(this);
+
+				gThis.selectAll(".dyn-layer").remove();
+
+				// Mostrar etiqueta con función genérica
+				showLabel(gThis, clave, xBand, baselineY);
+		});
+		barsVers.on("mouseleave", function() {
+				const gThis = d3.select(this);
+				hideLabel(gThis);
+				gThis.selectAll(".dyn-layer").remove();
+		});
+}
+
+// Función - Mostrar/Ocultar etiqueta Lib+Cap
+
+function showLabel(g, clave, xBand, baselineY) {
+    // Limpieza
+    g.selectAll(".dyn-label").remove();
+    // Crear etiqueta
+    g.append("text")
+        .attr("class", "dyn-label")
+        .attr("x", xBand.bandwidth() / 2)
+        .attr("y", baselineY - 75)
+        .attr("text-anchor", "middle")
+        .attr("font-size", 14)
+        .attr("font-weight", "bold")
+        .attr("fill", "#333")
+        .attr("transform", `rotate(-90, ${xBand.bandwidth()/2}, ${baselineY - 75})`)
+        .text(clave);
+}
+function hideLabel(g) {
+    g.selectAll(".dyn-label")
+        .interrupt()
+        .transition()
+        .duration(10)
+        .attr("opacity", 0)
+        .on("end", function () { d3.select(this).remove(); });
+}
+
+
+
+
 
 // Función avanzada para convertir RTF simple a HTML
 function parseRTFtoHTMLAdvanced(rtf) {
@@ -542,68 +582,9 @@ async function drawViz() {
 		//Barras FIN
 
 //////////////////////////////////////////////////////////////////////////////////////////////
+	// Invoca funcion de barras y etiquetas
+	setupBars(g, nodes, baselineY, xBand);
 
-		// Barras - INICIO  
-		// Variables - Definición
-		const svgBar = g; //d3.select("svg"); // Variable donde se va a dibujar el svg de d3
-		const data_vers = Object.fromEntries(nodes.map(n => [n.id, n.verses])); // Reemplaza datos de prueba por reales.
-		const h = 15; // Altura base de cada bloque
-		const baseHeight = 300; // Altura del area de las barras (para detectar mouse)
-		const vers = Object.values(data_vers); // Cantidad de versículos 
-		const libCap = Object.keys(data_vers); // Cantidad de libros+cap
-		
-		// Calcula los límites mínimo y máximo de cx en los nodos
-		const minX = d3.min(nodes, d => d.x);
-		const maxX = d3.max(nodes, d => d.x);
-
-		// Barras - Creación en HTML
-		const barsVers = svgBar.selectAll("g.barVer") // Asigna todos los elementos "g" de class="barVer" a la variable "barsVers"
-			.data(Object.entries(data_vers))   
-			.enter()
-			.append("g")  // Agrega el elemento "g"
-			.attr("class", "barVer")     // Asigna class="bar"
-			.attr("transform", (d, i) => `translate(${xBand(i)},0)`); // Reubica según la escala definida en "x"
-
-		// Barras Area Mouse - Creación en HTML
-		barsVers.append("rect") // Rectángulos base visibles (para detectar dónde pasar el mouse) 
-			.attr("x", 0) // 0 de x
-			.attr("y", baselineY) // 0 de y
-			.attr("width", xBand.bandwidth()) // Ancho de area según escala X
-			.attr("height", baseHeight) // Alto de area según escala X 
-			.attr("fill", "transparent"); // Relleno transparente para que no se vea
-
-		// Barras - Detección de mouse entrante
-		barsVers.on("mouseenter", function(event, [clave, valor]) { // Se usa mouseenter/mouseleave para evitar disparos por bubbling entre hijos (que si suceden con mouseover/mouseout)
-			const g = d3.select(this);
-			g.selectAll(".dyn-block").interrupt().remove(); // Quita cualquier contenido dinámico previo de bloque o texto. Evita duplicados si el mouse entra rápido varias veces
-			g.selectAll(".dyn-text").interrupt().remove();  // Quita cualquier contenido dinámico previo de bloque o texto. Evita duplicados si el mouse entra rápido varias veces
-			const bloques = d3.range(valor);    // Prepara un array [0..valor-1] para hacer un data-join (más eficiente que append en loop)
-			const gDyn = g.append("g").attr("class", "dyn-layer");
-
-			// Etiqueta vertical (Libro + Capítulo)
-			g.append("text")
-				.attr("class", "dyn-label")
-				.attr("x", xBand.bandwidth() / 2)
-				.attr("y", baselineY - 50)  
-				.attr("text-anchor", "middle")
-				.attr("font-size", 14)
-				.attr("font-weight", "bold")
-				.attr("fill", "#333")
-				.attr("transform", `rotate(-90, ${xBand.bandwidth() / 2}, ${baselineY - 50})`)
-				.text(clave);
-
-			// Barras - Detección de mouse saliente    
-			barsVers.on("mouseleave", function() {
-					const gDyn = d3.select(this);
-
-					g.selectAll(".dyn-label")
-						.interrupt()
-						.transition()
-						.duration(10)
-						.attr("opacity", 0)
-						.on("end", function() { d3.select(this).remove(); });
-			});
-		});
 
 		
 //////////////////////////////////////////////////////////////////////////////////////////////         
@@ -775,7 +756,6 @@ async function drawViz() {
 				.attr("text-anchor", "middle")
 				.attr("font-size", 14)
 				.attr("fill", "#333")
-				// Usar las variables reordenadas basadas en 'x'
 				.text(`${displayText}`);
 
 			// ------------------ INICIA BLOQUE: dibujar textos por columnas y comprobar espacio ------------------
