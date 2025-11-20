@@ -1,7 +1,4 @@
-// BLOQUE Funciones
-
-// Función - Carga de datos de nodos, links y libros.
-async function loadResource(name) {
+async function loadResource(name) { // Función - Cargar recursos - No visible. Crea promesa (un evento pendiente) para que cuando el JSON termine de cargar datos de nodos, links y libros, luego drawViz() espera los datos con await y pueda dibujar todo eso. Crea un objeto XMLHttpRequest en memoria (no visible)
   try {
     const res = await fetch(`./data/${name}.json`);
     if (!res.ok) throw new Error(`No se pudo cargar ${name}.json`);
@@ -12,39 +9,32 @@ async function loadResource(name) {
   }
 }
 
-const loadNodes = () => loadResource("nodes");
-const loadLinks = () => loadResource("links");
-const loadBooks = () => loadResource("books");
+const loadNodes = () => loadResource("nodes"); // Define variable contenedora para luego usar con await a la hora de invocar
+const loadLinks = () => loadResource("links"); // Define variable contenedora para luego usar con await a la hora de invocar
+const loadBooks = () => loadResource("books"); // Define variable contenedora para luego usar con await a la hora de invocar
 
-// Función - Carga de libros
-
-async function loadBooksTest() {
+async function loadBooksFn() { // Función - Carga de libros - No visible. Espera los datos de libros según testamentos, y una vez ejecutada carga estos datos en memoria, en 2 arrays globales: ["Génesis", "Éxodo", ...] y ["Mateo", "Marcos", ...]
   const booksData = await loadBooks();
 	oldTestamentBooks = booksData.oldTestamentBooks || [];
 	newTestamentBooks = booksData.newTestamentBooks || [];
 }
-loadBooksTest();
+loadBooksFn();
 
-// Función - Inicializa canvas, SVG y cajas de texto
-function initCanvas() {
-  const vizEl = document.getElementById("viz");
-  const width = vizEl.clientWidth || 1800;
-  const height = vizEl.clientHeight || 8000;
-  const grafWidth = width * 0.99;
-  const grafHeight = height * 0.95;
-  // Márgenes y área interna
-  const margin = {top: 20, right: 20, bottom: 20, left: 20};
-  const innerWidth = width * 0.95;
-  const innerHeight = height * 0.80;
-  // Escala de colores D3
-  const color = d3.scaleOrdinal(d3.schemeTableau10);
-  // Limpiar contenido anterior
-  d3.select("#viz").selectAll("svg, canvas").remove();
-  // Canvas (para arcos estáticos)
-  const canvas = d3.select("#viz")
-    .append("canvas")
-    .attr("width", grafWidth)
-    .attr("height", grafHeight)
+function initCanvas() { // Función - Inicializa canvas, SVG y cajas de texto
+  const vizEl = document.getElementById("viz"); // Busca el <div id="viz"> en el DOM que contendrá todo lo que se dibuje. 
+  const width = vizEl.clientWidth || 1800; // Define ancho del contenedor según su tamaño visible y sino la medida por defecto.
+  const height = vizEl.clientHeight || 8000; // Define alto del contenedor según su tamaño visible y sino la medida por defecto.
+  const grafWidth = width * 0.99; // Ancho de área gráfica real (para SVG y canvas)
+  const grafHeight = height * 0.99; // Alto de área gráfica real (para SVG y canvas)
+  const margin = {top: 20, right: 20, bottom: 20, left: 20}; // Margenes estandar para reutilizar
+  const innerWidth = grafWidth * 0.99; // Ancho interno utilizable dentro del real
+  const innerHeight = grafHeight * 0.99; // Alto interno utilizable dentro del real
+  const color = d3.scaleOrdinal(d3.schemeTableau10); // Crea escala de colores de D3
+  d3.select("#viz").selectAll("svg, canvas").remove(); // Limpia contenido anterior, deja contenedor en blanco
+  const canvas = d3.select("#viz") // Canvas (para arcos estáticos)
+    .append("canvas") // Crea canvas dentro del div=#viz
+    .attr("width", grafWidth) // Ancho real 
+    .attr("height", grafHeight) // Alto real
     .style("position", "absolute")
     .style("z-index", 2);
   const ctx = canvas.node().getContext("2d");
@@ -200,7 +190,7 @@ function nodeInteractions(svgGroup, nodes, links, nodesMap, baselineY, xBand, yS
     // Interacción sobre los nodos
     svgGroup.selectAll("circle.node")
         .on("mouseover", function(event, d) {
-					d3.select(this).transition().duration(150).attr("r", nodeHoverRadius);
+					d3.select(this).raise().transition().duration(150).attr("r", nodeHoverRadius);
 					// Limpiar arcos previos
 					highlightLayer.selectAll("path").remove();
 					// Dibujar todos los arcos relacionados al nodo
@@ -362,10 +352,6 @@ function hideLabel(g) {
         .on("end", function () { d3.select(this).remove(); });
 }
 
-
-
-
-
 // Función avanzada para convertir RTF simple a HTML
 function parseRTFtoHTMLAdvanced(rtf) {
   if (!rtf) return "";
@@ -440,13 +426,8 @@ function parseRTFtoHTMLAdvanced(rtf) {
   // Dentro de drawViz(), se pueden distinguir 8 subbloques funcionales:
 
 async function drawViz() {
-
-  // Datos de nodes y links  --> Renumerar 
-	// nodes: representa los capítulos de la Biblia (por ejemplo “Génesis 1”).
-  	// verses: indica cuántos versículos tiene cada capítulo (para escalar la barra vertical).
-  const nodes = await loadNodes();
-  // links: pares de relaciones entre capítulos, que se dibujarán como arcos.
-  const links = await loadLinks();
+  const nodes = await loadNodes(); // Crea en memoria un array de nodos del estilo: [{"id": "Génesis 1","verses": 31}...]
+  const links = await loadLinks(); // Crea en memoria un array de links del estilo: [{"source": "Génesis 1:3","target_ini": "2 Corintios 4:6", "target_fin": "2 Corintios 4:6", "text_source": "Y dijo Dios: Sea la luz...", "text_target": "Porque Dios, que mandó que ...."}...]
   // Define variables según funcion "initCanvas()"
   const { svg, ctx, g, innerWidth, innerHeight, grafWidth, grafHeight, margin, color } = initCanvas();
 	// Crear escalas de forma centralizada

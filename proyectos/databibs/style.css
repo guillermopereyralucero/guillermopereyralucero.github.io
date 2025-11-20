@@ -1,137 +1,94 @@
-/* Define variables CSS globales (custom properties) y una fuente base:
---bg: color de fondo general.
---card: color de fondo para tarjetas o secciones blancas.
---accent: color de acento (azul principal).
---muted: gris para texto secundario.
---border: color de bordes suaves.
---radius: radio de redondeo de esquinas.
---max-width: ancho máximo del contenido central.
-font-family: tipografía general heredada por todo el documento.. */
-
-:root{
-  --bg:#f6f7fb;
-  --card:#ffffff;
-  --accent:#2b6cb0;
-  --muted:#666;
-  --border: #e6e9ef;
-  --radius:10px;
-  --max-width:90%;
-  font-family: Inter, "Segoe UI", Roboto, Arial, sans-serif;
+:root{ /*Define variables globales para colores, tamaños y fuente. Cualquier elemento del sitio puede usarlas luego con var(--nombre).*/
+  --bg:#f6f7fb; /*color del fondo general.*/
+  --card:#ffffff; /*color blanco para tarjetas.*/
+  --accent:#2b6cb0; /*azul para títulos o acentos.*/
+  --muted:#666; /*gris para texto suave.*/
+  --border: #e6e9ef; /*color de bordes suaves.*/
+  --radius:12px; /*radio estándar (10px).*/
+  --max-width:100%; /*ancho máximo del contenedor*/
+  font-family: Inter, "Segoe UI", Roboto, Arial, sans-serif; /*tipografía general heredada por todo el documento.*/
 }
 
-/* Aplica un margen izquierdo de 40 px a todos los encabezados <h2> dentro de <body>. Sirve para separarlos visualmente del borde izquierdo. */
+body h2 {margin-left: 40px;} /* Aplica un margen izquierdo de 40 px a todos los encabezados <h2> dentro de <body>. Sirve para separarlos visualmente del borde izquierdo. */
 
-body h2 {margin-left: 40px;}
+* {box-sizing:border-box} /* Hace que el cálculo del tamaño de todos los elementos (*) incluya padding y borde dentro del ancho y alto. Mejora la coherencia de los tamaños en todo el layout. */
 
-/* Hace que el cálculo del tamaño de todos los elementos (*) incluya padding y borde dentro del ancho y alto. Mejora la coherencia de los tamaños en todo el layout. */
-
-* {box-sizing:border-box}
-
-/* Aplica a <html> y <body>:
-height:100%: ocupa todo el alto de la ventana.
-margin:0: elimina el margen por defecto del navegador.
-background: usa el color de fondo definido (--bg).
-color:#111: color base del texto (gris muy oscuro). */
-
-html,body{height:100%; 
-          margin:0; 
-          background:var(--bg); 
-          color:#111;}
-
-/*  Centra los bloques dentro de un ancho máximo del 90% de la pantalla. 
-    Añade 18 px de padding interno.
-    Se usa en <header> y <footer> para mantener el contenido centrado. */
-
-.container{max-width:var(--max-width); 
-           margin:0 auto; 
-           padding:18px}
-
-/*  Crea el fondo oscuro degradado del encabezado.
-    El texto se muestra en blanco (color:#fff).
-    Padding vertical de 26 px arriba y abajo. */
-
-.site-header{background:linear-gradient(90deg,#1f2937, #626262); 
-             color:#fff; 
-             padding:26px 0}
-
-/* – Elimina el margen por defecto del título principal y le da un tamaño grande (2rem≈32 px). */
-
-.site-header h1{margin:0; 
-                font-size:2rem}
-
-/*  Estilo para el subtítulo bajo el título principal:
-    Pequeño margen superior (4 px).
-    Tamaño normal de texto (1rem≈16 px).
-    Ligera transparencia para suavizar el contraste. */
-
-.site-header .subtitle{margin:4px 0 0; 
-                       font-size:1rem; 
-                       opacity:0.9}
-
-/*  Define el pie de página:
-    Padding vertical de 0.8rem=13px.
-    Texto gris tenue (--muted).
-    Tamaño de fuente pequeño (0.8rem=13px). */
-
-.site-footer{padding:0.8rem 0; 
-             color:var(--muted); 
-             font-size:0.8rem}
-
-/*  Contenedor principal del gráfico D3:
-    Ocupa 99% del ancho y 98% de alto.
-    Centrado con margin:auto.
-    Fondo blanco con borde suave y esquinas redondeadas.
-    Sombra ligera para destacar el bloque.
-    position:relative permite colocar los elementos internos (canvas y svg) por capas.
-    display: block hace que el elemento ocupe todo el ancho disponible, se muestre en una nueva línea y se apile verticalmente con otros elementos de bloque.
-    overflow:auto deja que elementos sobresalgan del contenedor añadiendo scroll (visible lo hace sin scroll).
-    z-index:1 asegura que esté por encima del fondo pero debajo de elementos superiores. */
-
-#viz {width: 98%;
-      height: 98%;
-      margin: auto;
-      background: #fff;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      box-shadow: 0 6px 18px rgba(12,18,35,0.06);
-      position: relative;
-      display: block;
-      z-index: 1;
+html,body{ /* Aplica a <html> y <body>*/
+  height:100%; /*el documento siempre ocupa el alto entero.*/
+  margin:0; /*elimina el margen por defecto del body.*/
+  background:var(--bg); /*usa el color de fondo definido en variable de root*/
+  color:#111; /*texto gris casi negro.*/
 }
 
-/* Asegura que <svg> dentro del contenedor se comporten como bloques (sin espacios extras) y se posicionen correctamente. */ 
-
-svg {
-  display: block;
-  margin: auto; 
+.container{ /*Define todos los class="container" internos (header, main y footer)*/
+  max-width:var(--max-width); /*Utiliza maximo definido en variable de root*/
+  margin:0 auto; /*centra horizontalmente*/
+  padding:18px; /*espaciado interno*/
 }
 
-canvas {
-  display: block;
-  margin: auto; 
+.site-header{ /*Estilos del encabezado*/
+  background:linear-gradient(90deg,#1f2937, #626262); /*Fondo degradado → de gris oscuro a gris medio.*/
+  color:#fff; /*Texto blanco.*/
+  padding:26px 0; /*Padding arriba/abajo para dar altura.*/
 }
 
-/* Estilo de los bloques que contienen los numeros de los versículos */
+.site-header h1{ /*Estilos de los h1 del encabezado*/
+  margin:0; /*Elimina margen default.*/
+  font-size:2rem; /*Define tamaño de texto (2rem≈32 px).*/
+}
 
+.site-header .subtitle{ /*Estilo para el subtítulo bajo el título principal*/
+  margin:4px 0 0; /*Define margen superior (4 px).*/
+  font-size:1rem; /*Tamaño normal de texto (1rem≈16 px).*/
+  opacity:0.9; /*Ligera transparencia para suavizar el contraste.*/
+}
 
+.site-footer{ /*Define estilos del pie de página:*/
+  padding:0.8rem 0; /*Padding vertical de 0.8rem=13px.*/
+  color:var(--muted); /*Texto gris definido en variable de root.*/
+  font-size:0.8rem; /*Tamaño de fuente pequeño (0.8rem=13px).*/
+}
 
-.dyn-block {
-  fill: #000000;         
-  stroke: #10a310;        
-  stroke-width: 1;
-  rx: 90;
-  ry: 90;
-  opacity: 0.9;
+#viz { /*Contenedor principal del gráfico D3*/
+  width: 98%; /*Ocupa 98% del ancho del div*/
+  height: 98%; /*Ocupa 98% del alto del div.*/
+  margin: auto; /*Centrado*/
+  background: --bg; /*Fondo según variable de root*/
+  border: 1px solid var(--border); /*borde suave.*/
+  border-radius: --radius; /*esquinas redondeadas*/
+  box-shadow: 0 6px 18px rgba(12,18,35,0.06); /*Sombra ligera para destacar el bloque.*/
+  position: relative; /*Permite colocar los elementos internos (canvas y svg) por capas.*/
+  display: block; /*Hace que el elemento ocupe todo el ancho disponible, se muestre en una nueva línea y se apile verticalmente con otros elementos de bloque.*/
+  z-index: 1; /*Asegura que esté por encima del fondo pero debajo de elementos superiores.*/
+}
+
+svg { /*Cuando D3 dibuje cosas, usará SVG*/
+  display: block; /*Hace que el elemento ocupe todo el ancho disponible, se muestre en una nueva línea y se apile verticalmente con otros elementos de bloque.*/
+  margin: auto; /*Centrado*/
+}
+
+canvas { /*Cuando D3 dibuje cosas, también usará canvas*/
+  display: block; /*Hace que el elemento ocupe todo el ancho disponible, se muestre en una nueva línea y se apile verticalmente con otros elementos de bloque.*/
+  margin: auto; /*Centrado*/
+}
+
+.dyn-dyn-block-node { /* Estilo de los bloques que contienen los numeros de los versículos */
+  fill: #16b020; /*interior negro*/        
+  stroke: #a31010; /*borde verde*/       
+  stroke-width: 10; /*grosor*/
+  rx: 90; /*esquina redondeada*/
+  ry: 90; /*esquina redondeada*/
+  opacity: 0.9; /*suaviza para disminuir contraste*/
 }
 
 
 .dyn-layer {
-  fill: #d41999;
-  /* stroke: #00ff11af; */ 
-  background: #0000;
-  stroke-width: 0.5;
-  rx: 3;
-  ry: 3;
-  opacity: 0.9;
+  fill: #1932d4; /*interior*/
+  stroke: #00ff11af; /*borde */
+  background: #0000; /*fondo*/
+  stroke-width: 0.5; /*grosor*/
+  rx: 3; /*esquina redondeada*/
+  ry: 3; /*esquina redondeada*/
+  opacity: 0.9;  /*suaviza para disminuir contraste*/
 }
 

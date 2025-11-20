@@ -1,29 +1,48 @@
 <!doctype html>
-  <html lang="es">  
-    <head>
-      <meta charset="utf-8" />
-      <meta name="viewport" content="width=device-width,initial-scale=1" />
-      <title>DataBibs - Visualización de Datos de la Biblia</title>
-      <link rel="stylesheet" href="style.css">
-      <link rel="icon" href="">
-      <script src="https://d3js.org/d3.v7.min.js"></script>
+  <html lang="es">  <!--Crea el elemento raíz del documento. lang="es" indica que el contenido está en español.-->
+    <head> <!--No visible, es para configuraciones-->
+      <meta charset="utf-8" /> <!--Indica que el documento usa UTF-8. Permite mostrar tildes, ñ, etc.-->
+      <meta name="viewport" content="width=device-width,initial-scale=1" /> <!--Indica a móviles que la página debe adaptarse al ancho del dispositivo.-->
+      <title>DataBibs - Visualización de Datos de la Biblia</title> <!--Define el texto que aparece en la pestaña del navegador.-->
+      <link rel="stylesheet" href="style.css"> <!--Carga y conecta a archivo CSS externo. Es una configuración invisible pero el navegador aplicará estilos a lo que viene luego.-->
+      <link rel="icon" href=""> <!--Reserva espacio para un ícono del sitio (favicon). Como está vacío, no se carga ningún icono.-->
+      <script src="https://d3js.org/d3.v7.min.js"></script> <!--Carga D3.js versión 7 la librería para generar el gráfico.-->
     </head>
-    <body>
-      <header class="site-header">
-        <div class="container">
-            <h1>DataBibs - Visualización de Datos de la Biblia</h1>
-            <p class="subtitle">Explora categorías, filtra y busca referencias</p>
+    <body> <!--Aquí empiezan a aparecer cosas en el DOM.-->
+      <header class="site-header"> <!--Encabezado del sitio, sección superior fija o destacada.-->
+        <div class="container"> <!--Contenedor para centrar contenido-->
+            <h1>DataBibs - Visualización de Datos de la Biblia</h1> <!--Título principal-->
+            <p class="subtitle">Explora categorías, filtra y busca referencias</p> <!--Subtítulo descriptivo.-->
         </div>
-      </header>
-      <main>
-        <h2>Gráfico de referencias bíblicas</h2>
-        <div id="viz"></div>
+      </header> 
+      <main> <!--Contenido principal, estructura central de la página.-->
+        <div class="container"> <!--Contenedor centrado.-->
+          <h2>Gráfico de referencias bíblicas</h2> <!--Título de la sección del gráfico.-->
+          <div id="viz"></div> <!--Contenedor vacío donde D3.js dibujará el gráfico-->
+        </div>
       </main>
-      <footer class="site-footer">
-        <div class="container">
-          <small>Desarrollado por GPL-Dev.</small>
+      <footer class="site-footer"> <!--Pie de página, zona inferior del sitio.-->
+        <div class="container"> <!--Contenedor centrado.-->
+          <small>Desarrollado por GPL-Dev.</small> <!--Texto más pequeño.-->
         </div>
       </footer>
-      <script src="script.js"></script>
+      <script src="script.js"></script> <!--Carga de archivo JavaScript externo.-->
     </body>
   </html>
+  <!--
+
+  html
+ └── head
+ └── body
+      ├── header.site-header
+      │     └── div.container
+      │           ├── h1
+      │           └── p.subtitle
+      ├── main
+      │     ├── h2
+      │     └── div#viz   ← aquí el JS dibujará el gráfico
+      └── footer.site-footer
+            └── div.container
+                  └── small
+  
+                  -->
